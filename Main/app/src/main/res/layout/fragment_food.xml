@@ -1,14 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_red_light">
+    tools:context = ".MainActivity">
+
+    <Button
+        android:id="@+id/btn_picture"
+        android:layout_width="133dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="138dp"
+        android:layout_marginTop="344dp"
+        android:text="사진찍기" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="81dp"
+        android:layout_marginTop="75dp"
+        tools:srcCompat="@tools:sample/avatars"
+        android:background="@drawable/edge"/>
 
     <TextView
+        android:id="@+id/textView"
+        android:layout_width="389dp"
+        android:layout_height="38dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:gravity = "center"
+        android:textStyle = "bold"
+        android:textSize = "20dp"
+        android:background = "@drawable/edge"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="7dp"
+        android:text="나의 음식 정보"
+        android:textColor="@color/purple_700" />
+
+    <TextView
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Food Fragment"
-        android:textSize="30sp"
-        android:layout_centerInParent="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginBottom="299dp"
+        android:text="첫번째 그릇" />
 
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="74dp"
+        android:layout_marginBottom="272dp"
+        android:text="이    름 : " />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="74dp"
+        android:layout_marginBottom="246dp"
+        android:text="무    게 : " />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="74dp"
+        android:layout_marginBottom="221dp"
+        android:text="칼로리 : " />
 </RelativeLayout>
