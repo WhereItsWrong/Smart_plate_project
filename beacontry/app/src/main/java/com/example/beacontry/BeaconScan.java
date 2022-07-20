@@ -17,6 +17,7 @@ import android.os.RemoteException;
 
 import android.provider.Settings;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -40,12 +41,13 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
 
     //TODO [실시간 비콘 스캐닝을 하기 위한 변수 및 객체 선언 실시]
     private BeaconManager beaconManager; // [비콘 매니저 객체]
+    private PermissionSupport permission;
     private List<Beacon> beaconList = new ArrayList<>(); // [실시간 비콘 감지 배열]
     int beaconScanCount = 1; // [비콘 스캔 횟수를 카운트하기 위함]
-    ArrayList beaconFormatList = new ArrayList<>(); // [스캔한 비콘 리스트를 포맷해서 저장하기 위함]
+    ArrayList beaconFormatList = new ArrayList<>();// [스캔한 비콘 리스트를 포맷해서 저장하기 위함]
+
+
     TextView beaconText;
-
-
 
     String beaconMessage = "";
 
@@ -54,6 +56,7 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        permissionCheck(); //위치 권한 실행
 
         Log.d("---","---");
         Log.d("//===========//","================================================");
@@ -548,7 +551,29 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
             e.printStackTrace();
         }
     }
+    // 권한 체크
+    private void permissionCheck() {
 
+        // PermissionSupport.java 클래스 객체 생성
+        permission = new PermissionSupport(this, this);
+
+        // 권한 체크 후 리턴이 false로 들어오면
+        if (!permission.checkPermission()){
+            //권한 요청
+            permission.requestPermission();
+        }
+    }
+
+    // Request Permission에 대한 결과 값 받아와
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //여기서도 리턴이 false로 들어온다면 (사용자가 권한 허용 거부)
+        if (!permission.permissionResult(requestCode, permissions, grantResults)) {
+            // 다시 permission 요청
+            permission.requestPermission();
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 
 
 }
