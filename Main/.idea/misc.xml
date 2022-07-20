@@ -4,6 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/22_HF109/Main/app/src/main/res/drawable-v24/edge.xml" value="0.1305" />
+        <entry key="..\:/22_HF109/Main/app/src/main/res/drawable/ic_baseline_fiber_manual_record_24.xml" value="0.1" />
+        <entry key="..\:/22_HF109/Main/app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.1" />
+        <entry key="..\:/22_HF109/Main/app/src/main/res/layout/activity_main.xml" value="0.25364583333333335" />
+        <entry key="..\:/22_HF109/Main/app/src/main/res/layout/fragment_communication.xml" value="0.25364583333333335" />
+        <entry key="..\:/22_HF109/Main/app/src/main/res/layout/fragment_food.xml" value="0.2" />
+        <entry key="..\:/22_HF109/Main/app/src/main/res/layout/fragment_record.xml" value="0.18070652173913043" />
         <entry key="..\:/Users/youns/AndroidStudioProjects/Main/app/src/main/res/layout/activity_main.xml" value="0.11503623188405797" />
         <entry key="..\:/Users/youns/AndroidStudioProjects/Main/app/src/main/res/layout/fragment_communication.xml" value="0.11503623188405797" />
         <entry key="..\:/Users/youns/AndroidStudioProjects/Main/app/src/main/res/layout/fragment_food.xml" value="0.11503623188405797" />
