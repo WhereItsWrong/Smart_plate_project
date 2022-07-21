@@ -51,6 +51,13 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
 
     String beaconMessage = "";
 
+    //TODO [그릇색별 변수]
+    String white_plate = "";
+    String red_plate = "";
+    String black_plate = "";
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,6 +234,7 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
     }
     Handler BeaconHandler = new Handler() {
         @SuppressLint("HandlerLeak")
+        String tmp = "";
         public void handleMessage(Message msg) {
             int beaconCount = 0;
             beaconMessage = "";
@@ -264,6 +272,18 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
                     beaconFormatList.add("----------------------------------------------------------------------\n");
                     beaconCount += 1;
 
+                    tmp = String.valueOf(beacon.getBluetoothName());
+
+                    if(tmp.contains("W_Plate")){
+                        white_plate = String.valueOf(beacon.getId1().toString()).substring(0,8);
+                    }
+                    else if (tmp.contains("R_Plate")){
+                        red_plate = String.valueOf(beacon.getId1().toString()).substring(0,8);
+                    }
+                    else if (tmp.contains("B_Plate")){
+                        red_plate = String.valueOf(beacon.getId1().toString()).substring(0,8);
+                    }
+
 
 
                     //TODO [스캔한 비콘 정보 포맷 실시]
@@ -292,12 +312,27 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
                 Log.d("","\n"+"[비콘 스캔 정보 확인] "+" ["+String.valueOf(beaconFormatList.toString())+"]");
                 Log.w("//===========//","================================================");
                 Log.d("---","---");
+
+                //TODO [텍스트뷰 처리를 위한 비콘 메세지 입력]
+
                 beaconMessage += "================================================";
                 beaconMessage += "\n"+"[비콘 스캔 실행 횟수] "+" ["+String.valueOf(beaconScanCount)+"]";
                 //beaconMessage += "\n"+"[비콘 스캔 개수 확인] "+" ["+String.valueOf(beaconFormatList.size())+"]";
                 beaconMessage += "\n"+"[비콘 스캔 개수 확인] "+" ["+beaconCount+"개"+"]";
-                beaconMessage += "\n"+"[비콘 스캔 정보 확인] "+" ["+String.valueOf(beaconFormatList.toString())+"]";
+                beaconMessage += "\n"+"[비콘 스캔 정보 확인] "+ String.valueOf(beaconFormatList.toString()).substring(1, String.valueOf(beaconFormatList.toString()).length()-1);
                 beaconMessage += "================================================";
+
+                if(Integer.parseInt(white_plate) != 0) {
+                    beaconMessage += "\n 흰색그릇 : " + Integer.parseInt(white_plate);
+                }
+                else if(Integer.parseInt(red_plate) != 0){
+                    beaconMessage += "\n 빨간색그릇" + Integer.parseInt(red_plate);
+                }
+                else if(Integer.parseInt(black_plate) != 0) {
+                    beaconMessage += "\n 검은색그릇" + Integer.parseInt(black_plate);
+                }
+                // else if가 아니고 if 이면 beaconscanCount가 안오르는 현상이 존재함(확인필요)
+
 
                 //TODO [중간 필요한 로직 처리 실시]
 
