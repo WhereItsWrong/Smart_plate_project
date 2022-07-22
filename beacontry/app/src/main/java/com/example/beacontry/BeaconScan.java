@@ -41,11 +41,11 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
 
     //TODO [실시간 비콘 스캐닝을 하기 위한 변수 및 객체 선언 실시]
     private BeaconManager beaconManager; // [비콘 매니저 객체]
-    private PermissionSupport permission;
     private List<Beacon> beaconList = new ArrayList<>(); // [실시간 비콘 감지 배열]
-    int beaconScanCount = 1; // [비콘 스캔 횟수를 카운트하기 위함]
-    ArrayList beaconFormatList = new ArrayList<>();// [스캔한 비콘 리스트를 포맷해서 저장하기 위함]
+    private PermissionSupport permission;
 
+    int beaconScanCount = 1; // [비콘 스캔 횟수를 카운트하기 위함]
+    ArrayList beaconFormatList = new ArrayList<>(); // [스캔한 비콘 리스트를 포맷해서 저장하기 위함]
 
     TextView beaconText;
 
@@ -56,14 +56,10 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
     String red_plate = "";
     String black_plate = "";
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        permissionCheck(); //위치 권한 실행
 
         Log.d("---","---");
         Log.d("//===========//","================================================");
@@ -120,9 +116,7 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
 
             @Override
             public void onClick(View v) {
-                BeaconScanStart();
-
-
+                goBleSettingsIntent();
             }
         });
         button4.setOnClickListener(new View.OnClickListener(){
@@ -234,8 +228,8 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
     }
     Handler BeaconHandler = new Handler() {
         @SuppressLint("HandlerLeak")
-        String tmp = "";
         public void handleMessage(Message msg) {
+            String tmp = "";
             int beaconCount = 0;
             beaconMessage = "";
             try {
@@ -285,7 +279,6 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
                     }
 
 
-
                     //TODO [스캔한 비콘 정보 포맷 실시]
                     /*
                     JSONObject jsonBeacon = new JSONObject();
@@ -319,7 +312,7 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
                 beaconMessage += "\n"+"[비콘 스캔 실행 횟수] "+" ["+String.valueOf(beaconScanCount)+"]";
                 //beaconMessage += "\n"+"[비콘 스캔 개수 확인] "+" ["+String.valueOf(beaconFormatList.size())+"]";
                 beaconMessage += "\n"+"[비콘 스캔 개수 확인] "+" ["+beaconCount+"개"+"]";
-                beaconMessage += "\n"+"[비콘 스캔 정보 확인] "+ String.valueOf(beaconFormatList.toString()).substring(1, String.valueOf(beaconFormatList.toString()).length()-1);
+                beaconMessage += "\n"+"[비콘 스캔 정보 확인] "+" ["+String.valueOf(beaconFormatList.toString())+"]";
                 beaconMessage += "================================================";
 
                 if(Integer.parseInt(white_plate) != 0) {
@@ -333,7 +326,6 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
                 }
                 // else if가 아니고 if 이면 beaconscanCount가 안오르는 현상이 존재함(확인필요)
 
-
                 //TODO [중간 필요한 로직 처리 실시]
 
                 //TODO [비콘 스캔 카운트 증가]
@@ -343,7 +335,7 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
                 e.printStackTrace();
             }
             //TODO [자기 자신을 1초마다 호출]
-                beaconText.setText(beaconMessage);
+            beaconText.setText(beaconMessage);
 
             BeaconHandler.sendEmptyMessageDelayed(0, 1000);
         }
