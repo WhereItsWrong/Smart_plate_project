@@ -15,7 +15,7 @@
         android:layout_centerInParent="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginStart="138dp"
-        android:layout_marginTop="344dp"
+        android:layout_marginTop="315dp"
         android:text="사진찍기" />
 
     <ImageView
@@ -27,9 +27,9 @@
         android:layout_centerInParent="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginStart="81dp"
-        android:layout_marginTop="75dp"
-        tools:srcCompat="@tools:sample/avatars"
-        android:background="@drawable/edge"/>
+        android:layout_marginTop="55dp"
+        android:background="@drawable/edge"
+        tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/textView"
@@ -54,19 +54,29 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="40dp"
-        android:layout_marginBottom="299dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginBottom="334dp"
         android:text="첫번째 그릇" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="74dp"
-        android:layout_marginBottom="272dp"
-        android:text="이    름 : " />
+        android:layout_marginStart="39dp"
+        android:layout_marginBottom="214dp"
+        android:text="두번째 그릇" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="35dp"
+        android:layout_marginBottom="98dp"
+        android:text="세번째 그릇" />
 
     <TextView
         android:id="@+id/textView4"
@@ -74,8 +84,28 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="74dp"
-        android:layout_marginBottom="246dp"
+        android:layout_marginStart="75dp"
+        android:layout_marginBottom="284dp"
+        android:text="무    게 : " />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="75dp"
+        android:layout_marginBottom="163dp"
+        android:text="무    게 : " />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="75dp"
+        android:layout_marginBottom="48dp"
         android:text="무    게 : " />
 
     <TextView
@@ -84,7 +114,96 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="74dp"
-        android:layout_marginBottom="221dp"
+        android:layout_marginStart="75dp"
+        android:layout_marginBottom="259dp"
         android:text="칼로리 : " />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="75dp"
+        android:layout_marginBottom="138dp"
+        android:text="칼로리 : " />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="75dp"
+        android:layout_marginBottom="22dp"
+        android:text="칼로리 : " />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="75dp"
+        android:layout_marginBottom="310dp"
+        android:text="이    름 : " />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="75dp"
+        android:layout_marginBottom="188dp"
+        android:text="이    름 : " />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="75dp"
+        android:layout_marginBottom="73dp"
+        android:text="이    름 : " />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="355dp"
+        android:layout_height="105dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="371dp"
+        android:layout_marginBottom="254dp"
+        android:background="@drawable/edge" />
+
+    <View
+        android:id="@+id/view4"
+        android:layout_width="355dp"
+        android:layout_height="105dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="490dp"
+        android:layout_marginBottom="134dp"
+        android:background="@drawable/edge" />
+
+    <View
+        android:id="@+id/view5"
+        android:layout_width="355dp"
+        android:layout_height="105dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="607dp"
+        android:layout_marginBottom="18dp"
+        android:background="@drawable/edge" />
 </RelativeLayout>

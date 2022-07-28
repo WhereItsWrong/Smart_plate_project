@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationBarView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnItemSelectedListener(navListener);
+        getSupportActionBar().setTitle("                             스마트 그릇");
 
 
     }
