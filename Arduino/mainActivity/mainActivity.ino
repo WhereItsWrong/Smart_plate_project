@@ -7,7 +7,7 @@
 #define BT_TXD 7
 SoftwareSerial bluetooth(7, 8);
 
-#define calibration_factor -235000
+#define calibration_factor -255000
 #define DOUT 3
 #define CLK 2
 HX711 scale(DOUT, CLK);
