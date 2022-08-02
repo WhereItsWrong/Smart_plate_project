@@ -495,6 +495,8 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
         }
     }
     // 권한 체크
+
+
     private void permissionCheck() {
 
         // PermissionSupport.java 클래스 객체 생성
