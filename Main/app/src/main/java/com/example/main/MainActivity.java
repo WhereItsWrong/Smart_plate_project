@@ -2,11 +2,13 @@ package com.example.main;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -35,6 +37,29 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    // todo 권한설정 메세지 박스(안드 구버전에서는 정상 작동, 최신버전에서는 권한 거부가 2회 이상시 "다시묻지않음"이 자동으로 설정되 논리 오류)
+    void showDialog() {
+        AlertDialog.Builder msgBuilder = new AlertDialog.Builder(MainActivity.this)
+                .setTitle("경고")
+                .setMessage("권한 거부 시 앱을 실행하실 수 없습니다. 앱을 종료하시겠습니까?")
+                .setPositiveButton("종료", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        permissionCheck();
+                    }
+                });
+        AlertDialog msgDlg = msgBuilder.create();
+        msgDlg.show();
+    }
+
+
     // 권한 체크
     private void permissionCheck() {
 
@@ -48,13 +73,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     // Request Permission에 대한 결과 값 받아와
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         //여기서도 리턴이 false로 들어온다면 (사용자가 권한 허용 거부)
         if (!permission.permissionResult(requestCode, permissions, grantResults)) {
-            // 다시 permission 요청
-            permission.requestPermission();
+            // alertdialog 실행
+            showDialog();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }

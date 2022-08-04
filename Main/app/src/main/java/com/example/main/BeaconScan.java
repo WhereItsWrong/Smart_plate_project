@@ -38,7 +38,6 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
     int beaconScanCount = 1; // [비콘 스캔 횟수를 카운트하기 위함]
     ArrayList beaconFormatList = new ArrayList<>(); // [스캔한 비콘 리스트를 포맷해서 저장하기 위함]
 
-    TextView beaconText;
 
     String beaconMessage = "";
 
@@ -224,15 +223,10 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
 
                 //TODO [텍스트뷰 처리를 위한 비콘 메세지 입력]
 
-                beaconMessage += "================================================";
-                beaconMessage += "\n"+"[비콘 스캔 실행 횟수] "+" ["+String.valueOf(beaconScanCount)+"]";
-                //beaconMessage += "\n"+"[비콘 스캔 개수 확인] "+" ["+String.valueOf(beaconFormatList.size())+"]";
-                beaconMessage += "\n"+"[비콘 스캔 개수 확인] "+" ["+beaconCount+"개"+"]";
-                beaconMessage += "\n"+"[비콘 스캔 정보 확인] "+" ["+String.valueOf(beaconFormatList.toString())+"]";
-                beaconMessage += "================================================";
 
                 if(Integer.parseInt(white_plate) != 0) {
-                    beaconMessage += "\n 흰색그릇 : " + Integer.parseInt(white_plate);
+                    beaconMessage += "흰색그릇 : " + Integer.parseInt(white_plate);
+
                 }
                 else if(Integer.parseInt(red_plate) != 0){
                     beaconMessage += "\n 빨간색그릇" + Integer.parseInt(red_plate);
@@ -250,10 +244,14 @@ public class BeaconScan extends AppCompatActivity implements BeaconConsumer {
             catch (Exception e){
                 e.printStackTrace();
             }
+
             //TODO [자기 자신을 1초마다 호출]
-            beaconText.setText(beaconMessage);
+            //기존 beacontry 프로젝트때 활용한 메소드
+//            beaconText.setText(beaconMessage);
+
 
             BeaconHandler.sendEmptyMessageDelayed(0, 1000);
+
         }
     };
 
