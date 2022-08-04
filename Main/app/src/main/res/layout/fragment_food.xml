@@ -14,9 +14,21 @@
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:layout_gravity="center_horizontal"
-        android:layout_marginStart="138dp"
+        android:layout_marginStart="61dp"
         android:layout_marginTop="315dp"
         android:text="사진찍기" />
+
+    <Button
+        android:id="@+id/btn_record"
+        android:layout_width="133dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="218dp"
+        android:layout_marginTop="315dp"
+        android:text="기록하기" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -26,7 +38,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:layout_gravity="center_horizontal"
-        android:layout_marginStart="81dp"
+        android:layout_marginStart="80dp"
         android:layout_marginTop="55dp"
         android:background="@drawable/edge"
         tools:srcCompat="@tools:sample/avatars" />

@@ -25,6 +25,7 @@ public class FoodFragment extends Fragment {
     Bitmap bitmap;
 
     public Button get_btn_picture;
+    public Button btn_record;
     public ImageView imgV;
     public File file;
 
@@ -36,6 +37,7 @@ public class FoodFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_food, container, false);
 
         get_btn_picture = view.findViewById(R.id.btn_picture);
+        btn_record = view.findViewById(R.id.btn_record);
         imgV = view.findViewById(R.id.imageView);
 
         get_btn_picture.setOnClickListener(new View.OnClickListener(){
