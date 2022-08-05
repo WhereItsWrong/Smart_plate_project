@@ -45,7 +45,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/plate1"
+                android:id="@+id/plate_Black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
@@ -53,7 +53,7 @@
                 android:visibility="gone" />
 
             <TextView
-                android:id="@+id/plate2"
+                android:id="@+id/plate_White"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
@@ -61,7 +61,7 @@
                 android:visibility="gone" />
 
             <TextView
-                android:id="@+id/plate3"
+                android:id="@+id/plate_Red"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
@@ -69,7 +69,7 @@
                 android:visibility="gone" />
 
             <TextView
-                android:id="@+id/plate4"
+                android:id="@+id/plate_Blue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
