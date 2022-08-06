@@ -41,32 +41,33 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements BeaconConsumer {
+    // 홍승표 권한 허용의 잔재
 //    public static final int REQUEST_PERMISSION = 11;
-    // TODO 비콘 메세지를 FoodFragent로 보낼 방법이 없음으로 스태틱 선언- 추후 방법 찾을 시 수정할 것 (스태틱 사용이 안스에서 생명주기로 인해 추천되지 않음)\
+    // TODO 처음에는 비콘 클래스를(Activity가 아닌) 따로 생성하여 FoodFragment에서 객체 선언 후 처리 시도,
+    // TODO 비콘을 처리하는 클래스는 Activity 클래스가 아니면 실행되지 않음 - BeaconScan.java 삭제후 MainActivy.java에 통합
+    // TODO 비콘 메세지를 FoodFragent로 보낼 방법이 없음으로 스태틱 선언- 추후 방법 찾을 시 수정할 것 (스태틱 사용이 안스에서 생명주기로 인해 추천되지 않음)
 
+    // TODO log를 위한 비콘 메세지
     static String beaconMessage = "";
+
     //TODO [그릇색별 변수]
     static String plate_Black = "";
     static String plate_White = "";
     static String plate_Red = "";
     static String plate_Blue = "";
 
+    //TODO 권한객체 선언
     private PermissionSupport permission;
 
     //TODO [실시간 비콘 스캐닝을 하기 위한 변수 및 객체 선언 실시]
     private BeaconManager beaconManager; // [비콘 매니저 객체]
     private List<Beacon> beaconList = new ArrayList<>(); // [실시간 비콘 감지 배열]
 
-
-
+    //TODO 비콘을 위한 변수 선언
     int beaconScanCount = 1; // [비콘 스캔 횟수를 카운트하기 위함]
     ArrayList beaconFormatList = new ArrayList<>(); // [스캔한 비콘 리스트를 포맷해서 저장하기 위함]
 
-
-
     //TODO [비콘 스캐닝을 위한 초기 설정]
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         Log.d("---","---");
 
         //TODO [비콘 매니저 초기 설정 및 레이아웃 지정 실시]
-
         BeaconSettiong();
         if(getBleStateCheck() == true){ // [블루투스 및 GPS 기능이 모두 활성 상태]
             BeaconScanStart(); //[비콘 스캔 시작 실시]
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                     tmp = String.valueOf(beacon.getBluetoothName());
                     //TODO 비콘이름을 가지고 판별, 다만 현재 AT커맨드로 비콘 이름을 바꾸는것이 불안정하기 때문에 수정될 수 있음
                     //TODO 이름 포함을 통해 무게 추출(uuid값을 사용)
-                    if(tmp.contains("W_Plate")){
+                    if(tmp.contains("White_Plate")){
                         plate_White = String.valueOf(beacon.getId1()).substring(0,8);
                     }
                     else if (tmp.contains("Red_Plate")){
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                         plate_Blue = String.valueOf(beacon.getId1()).substring(0,8);
                     }
                     else if (tmp.contains("Black_Plate")){
-                        plate_Blue = String.valueOf(beacon.getId1()).substring(0,8);
+                        plate_Black = String.valueOf(beacon.getId1()).substring(0,8);
                     }
 
 

@@ -43,17 +43,18 @@ public class FoodFragment extends Fragment {
     private static final int REQUEST_IMAGE_CODE = 101;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
-        //Todo 스태틱을 사용해 MainActiviy의 비콘 메세지(그릇당 무게값)을 전달받음.
-        // 안드로이드에서 생명주기에 의해 스태틱 사용기 지양됨으로 추후 수정이 가능하다면(가능하다면...) 수정예정
+        //TODO 스태틱을 사용해 MainActiviy의 비콘 메세지(그릇당 무게값)을 전달받음.
+        //TODO 안드로이드에서 생명주기에 의해 스태틱 사용기 지양됨으로 추후 수정이 가능하다면(가능하다면...) 수정예정
+
         View view = inflater.inflate(R.layout.fragment_food, container, false);
 
-       //TODO [비콘 매니저 초기 설정 및 레이아웃 지정 실시]
-
+        //사진 버튼 선언
         get_btn_picture = view.findViewById(R.id.btn_picture);
 
+        //TODO 버튼 미정
         button3 = view.findViewById(R.id.button3);
 
-
+        //그릇 객체 선언
         plate_Black = view.findViewById(R.id.plate_Black);
         plate_White = view.findViewById(R.id.plate_White);
         plate_Blue = view.findViewById(R.id.plate_Blue);
@@ -61,6 +62,8 @@ public class FoodFragment extends Fragment {
 
         imgV = view.findViewById(R.id.imageView);
 
+
+        //TODO 버튼 미정
         button3.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -85,9 +88,6 @@ public class FoodFragment extends Fragment {
 //                        }
 //                    }
 //                }, 3000); //딜레이 타임 조절
-
-                // todo 음식 무게 정보 표시
-
             }
         });
 
@@ -97,6 +97,7 @@ public class FoodFragment extends Fragment {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 activityResultPicture.launch(intent);
 
+                //3초 이후 무게정보 표시
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -118,8 +119,11 @@ public class FoodFragment extends Fragment {
                             plate_Blue.setText("파란색 그릇 :" + MainActivity.plate_Blue + "g");
                         }
                         Log.d("---",MainActivity.beaconMessage);
+
                     }
                 }, 3000); //딜레이 타임 조절
+
+
 
 
 
