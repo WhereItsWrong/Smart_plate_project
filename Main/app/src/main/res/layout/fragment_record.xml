@@ -45,15 +45,28 @@
                 app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
                 android:visibility="invisible"/>
 
+            <ImageView
+                android:id="@+id/recordImg"
+                android:layout_width="139dp"
+                android:layout_height="122dp"
+                android:layout_weight="3.4"
+                tools:layout_editor_absoluteX="4dp"
+                tools:layout_editor_absoluteY="447dp"
+                tools:srcCompat="@tools:sample/avatars" />
+
             <TextView
+                android:id="@+id/textView2"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:id="@+id/textView2"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/contextEditText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/recordImg"
                 app:layout_constraintTop_toTopOf="@+id/contextEditText"
-                app:layout_constraintBottom_toBottomOf="@+id/contextEditText" app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
-                app:layout_constraintStart_toStartOf="@+id/contextEditText" android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp" android:visibility="invisible"/>
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -102,6 +115,7 @@
                 android:id="@+id/del_Btn"
                 app:layout_constraintBaseline_toBaselineOf="@+id/cha_Btn" app:layout_constraintEnd_toEndOf="@+id/save_Btn"
                 android:layout_marginEnd="8dp" android:layout_marginRight="8dp" android:visibility="invisible"></Button>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

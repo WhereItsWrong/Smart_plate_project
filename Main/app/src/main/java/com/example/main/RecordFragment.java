@@ -2,6 +2,9 @@ package com.example.main;
 
 import static android.content.Context.MODE_NO_LOCALIZED_COLLATORS;
 
+
+import static com.example.main.FoodFragment.sendImg;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.FileInputStream;
@@ -34,6 +38,7 @@ public class RecordFragment extends Fragment {
     public Button cha_Btn,del_Btn,save_Btn;
     public TextView diaryTextView,textView2,textView3;
     public EditText contextEditText;
+    public ImageView record_Img;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_record, container, false);
@@ -46,11 +51,12 @@ public class RecordFragment extends Fragment {
         textView2=view.findViewById(R.id.textView2);
         textView3=view.findViewById(R.id.textView3);
         contextEditText=view.findViewById(R.id.contextEditText);
+        record_Img=view.findViewById(R.id.recordImg);
 //        //로그인 및 회원가입 엑티비티에서 이름을 받아옴
 //        Intent intent=getIntent();
 //        String name=intent.getStringExtra("userName");
 //        final String userID=intent.getStringExtra("userID");
-//        textView3.setText(name+"님의 달력 일기장");
+//        textView3.setText(name+"님의 음식 기록");
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -61,8 +67,17 @@ public class RecordFragment extends Fragment {
                 textView2.setVisibility(View.INVISIBLE);
                 cha_Btn.setVisibility(View.INVISIBLE);
                 del_Btn.setVisibility(View.INVISIBLE);
+                record_Img.setVisibility(View.VISIBLE);
+
                 diaryTextView.setText(String.format("%d / %d / %d",year,month+1,dayOfMonth));
-                contextEditText.setText("");
+//                contextEditText.setText(contextEditText.getText());
+                contextEditText.setText(FoodFragment.plate_White_Message+"\n"+
+                                        FoodFragment.plate_Blue_Message+"\n"+
+                                        FoodFragment.plate_Black_Message+"\n"+
+                                        FoodFragment.plate_Red_Message+"\n");
+
+                //비트맵 불러오기
+                record_Img.setImageBitmap(sendImg);
                 checkDay(year,month,dayOfMonth);
             }
         });
@@ -71,6 +86,7 @@ public class RecordFragment extends Fragment {
             public void onClick(View view) {
                 saveDiary(fname);
                 str=contextEditText.getText().toString();
+
                 textView2.setText(str);
                 save_Btn.setVisibility(View.INVISIBLE);
                 cha_Btn.setVisibility(View.VISIBLE);
