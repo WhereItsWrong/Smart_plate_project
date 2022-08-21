@@ -38,13 +38,7 @@ public class FoodFragment extends Fragment {
     public TextView plate_Red;
     public TextView plate_Black;
     public TextView plate_Blue;
-
-    //기록 페이지 전달용 변수(텍스트)
-    static String plate_White_Message = "";
-    static String plate_Black_Message = "";
-    static String plate_Red_Message = "";
-    static String plate_Blue_Message = "";
-    static Bitmap sendImg;
+    
 
     private static final int REQUEST_IMAGE_CODE = 101;
 
@@ -65,7 +59,6 @@ public class FoodFragment extends Fragment {
         plate_White = view.findViewById(R.id.plate_White);
         plate_Blue = view.findViewById(R.id.plate_Blue);
         plate_Red = view.findViewById(R.id.plate_Red);
-
 
         imgV = view.findViewById(R.id.imageView);
 
@@ -112,22 +105,18 @@ public class FoodFragment extends Fragment {
                         if(!MainActivity.plate_White.equals("")) {
                             plate_White.setVisibility(View.VISIBLE);
                             plate_White.setText("흰색 그릇 :" +  MainActivity.plate_White + "g");
-                            plate_White_Message += "흰색 그릇 :" +  MainActivity.plate_White + "g";
                         }
                         if(!MainActivity.plate_Black.equals("")) {
                             plate_Black.setVisibility(View.VISIBLE);
                             plate_Black.setText("검정색 그릇 :" + MainActivity.plate_Black + "g" );
-                            plate_Black_Message += "검정색 그릇 :" +  MainActivity.plate_White + "g";
                         }
                         if(!MainActivity.plate_Red.equals("")) {
                             plate_Red.setVisibility(View.VISIBLE);
                             plate_Red.setText("빨간색 그릇 : " + MainActivity.plate_Red + "g");
-                            plate_Red_Message += "빨간색 그릇 :" +  MainActivity.plate_White + "g";
                         }
                         if(!MainActivity.plate_Blue.equals("")) {
                             plate_Blue.setVisibility(View.VISIBLE);
                             plate_Blue.setText("파란색 그릇 :" + MainActivity.plate_Blue + "g");
-                            plate_Blue_Message += "파란색 그릇 :" +  MainActivity.plate_White + "g";
                         }
                         Log.d("---",MainActivity.beaconMessage);
 
@@ -194,7 +183,6 @@ public class FoodFragment extends Fragment {
                         bitmap = (Bitmap) extras.get("data");
 
                         imgV.setImageBitmap(bitmap);
-                        sendImg = bitmap;
                     }
                 }
             }
