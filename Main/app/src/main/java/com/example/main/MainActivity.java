@@ -2,12 +2,14 @@ package com.example.main;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -67,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     int beaconScanCount = 1; // [비콘 스캔 횟수를 카운트하기 위함]
     ArrayList beaconFormatList = new ArrayList<>(); // [스캔한 비콘 리스트를 포맷해서 저장하기 위함]
 
+    private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
+    private static final int PERMISSION_REQUEST_BACKGROUND_LOCATION = 2;
     //TODO [비콘 스캐닝을 위한 초기 설정]
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         Log.d("","\n"+"[BeaconScan > onCreate() 메소드 : 액티비티 시작 실시]");
         Log.d("//===========//","================================================");
         Log.d("---","---");
+
+
 
         //TODO [비콘 매니저 초기 설정 및 레이아웃 지정 실시]
         BeaconSettiong();
@@ -101,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         Log.d("---","---");
         Log.d("//===========//","================================================");
         Log.d("","\n"+"[BeaconScan > BeaconSettiong() 메소드 : 비콘 매니저 초기 설정 수행]");
-        Log.d("","\n"+"[레이아웃 : m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25]");
+        Log.d("","\n"+"[레이아웃 : m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24]");
         Log.d("//===========//","================================================");
         Log.d("---","---");
         try {
@@ -112,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             beaconManager.setEnableScheduledScanJobs(false);
 
             //TODO [레이아웃 지정 - IOS , Android 모두 스캔 가능]
-            beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24"));
+            beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         }
         catch (Exception e){
             e.printStackTrace();
@@ -232,19 +238,19 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                     beaconFormatList.add("----------------------------------------------------------------------\n");
                     beaconCount += 1;
 
-                    tmp = String.valueOf(beacon.getBluetoothName());
+                    tmp = String.valueOf(beacon.getId1());
                     //TODO 비콘이름을 가지고 판별, 다만 현재 AT커맨드로 비콘 이름을 바꾸는것이 불안정하기 때문에 수정될 수 있음
                     //TODO 이름 포함을 통해 무게 추출(uuid값을 사용)
-                    if(tmp.contains("White_Plate")){
+                    if(tmp.contains("aaaa")){
                         plate_White = String.valueOf(beacon.getId1()).substring(0,8);
                     }
-                    else if (tmp.contains("Red_Plate")){
+                    else if (tmp.contains("bbbb")){
                         plate_Red = String.valueOf(beacon.getId1()).substring(0,8);
                     }
-                    else if (tmp.contains("Blue_Plate")){
+                    else if (tmp.contains("cccc")){
                         plate_Blue = String.valueOf(beacon.getId1()).substring(0,8);
                     }
-                    else if (tmp.contains("Black_Plate")){
+                    else if (tmp.contains("dddd")){
                         plate_Black = String.valueOf(beacon.getId1()).substring(0,8);
                     }
 
@@ -593,12 +599,23 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     // Request Permission에 대한 결과 값 받아와
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        //여기서도 리턴이 false로 들어온다면 (사용자가 권한 허용 거부)
-        if (!permission.permissionResult(requestCode, permissions, grantResults)) {
-            // alertdialog 실행
-            showDialog();
-        }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 0: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    showDialog();
+                }
+                break;
+            }
+        }
+//        //여기서도 리턴이 false로 들어온다면 (사용자가 권한 허용 거부)
+//        if (!permission.permissionResult(requestCode, permissions, grantResults)) {
+//            // 다이얼로그 실행
+//            showDialog();
+//        }
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
 
