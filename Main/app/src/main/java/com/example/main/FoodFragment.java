@@ -38,7 +38,13 @@ public class FoodFragment extends Fragment {
     public TextView plate_Red;
     public TextView plate_Black;
     public TextView plate_Blue;
-    
+
+    //기록 페이지 전달용 변수(텍스트)
+    static String plate_White_Message = "";
+    static String plate_Black_Message = "";
+    static String plate_Red_Message = "";
+    static String plate_Blue_Message = "";
+    static Bitmap sendImg;
 
     private static final int REQUEST_IMAGE_CODE = 101;
 
@@ -60,10 +66,11 @@ public class FoodFragment extends Fragment {
         plate_Blue = view.findViewById(R.id.plate_Blue);
         plate_Red = view.findViewById(R.id.plate_Red);
 
+
         imgV = view.findViewById(R.id.imageView);
 
 
-        //TODO 버튼 미정
+        //TODO 저장버튼
         button3.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -88,6 +95,19 @@ public class FoodFragment extends Fragment {
 //                        }
 //                    }
 //                }, 3000); //딜레이 타임 조절
+                sendImg = bitmap;
+                if(!MainActivity.plate_White.equals("")) {
+                    plate_White_Message += "흰색 그릇 :" +  MainActivity.plate_White + "g";
+                }
+                if(!MainActivity.plate_Black.equals("")) {
+                    plate_Black_Message += "검정색 그릇 :" +  MainActivity.plate_Black + "g";
+                }
+                if(!MainActivity.plate_Red.equals("")) {
+                    plate_Red_Message += "빨간색 그릇 :" +  MainActivity.plate_Red + "g";
+                }
+                if(!MainActivity.plate_Blue.equals("")) {
+                    plate_Blue_Message += "파란색 그릇 :" +  MainActivity.plate_Blue + "g";
+                }
             }
         });
 
