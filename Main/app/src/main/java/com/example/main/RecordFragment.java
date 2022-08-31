@@ -3,8 +3,6 @@ package com.example.main;
 import static android.content.Context.MODE_NO_LOCALIZED_COLLATORS;
 
 
-import static com.example.main.FoodFragment.sendImg;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
