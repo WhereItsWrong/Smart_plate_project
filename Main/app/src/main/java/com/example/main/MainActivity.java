@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     // TODO log를 위한 비콘 메세지
     static String beaconMessage = "";
 
+
     //TODO [그릇색별 변수]
     static String plate_Black = "";
     static String plate_White = "";

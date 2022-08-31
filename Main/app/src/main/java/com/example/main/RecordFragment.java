@@ -5,6 +5,7 @@ import static android.content.Context.MODE_NO_LOCALIZED_COLLATORS;
 
 import static com.example.main.FoodFragment.sendImg;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,10 @@ import android.widget.TextView;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -52,7 +57,22 @@ public class RecordFragment extends Fragment {
 //        textView3.setText(name+"님의 음식 기록");
 
 // 비트맵 불러오기
-        record_Img.setImageBitmap(sendImg);
+
+        //레코드 프레그먼트 시작부터 뜨게 하기위한 구문
+        Date currentTime = Calendar.getInstance().getTime();
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd", Locale.getDefault());
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MM", Locale.getDefault());
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+
+        int year = Integer.parseInt(yearFormat.format(currentTime));
+        int month = Integer.parseInt(monthFormat.format(currentTime));
+        int day = Integer.parseInt(dayFormat.format(currentTime));
+        diaryTextView.setText(String.format("%d / %d / %d",year,month,day));
+//                contextEditText.setText(contextEditText.getText());
+        //todo 윤서한테 물어봐야댐
+
+        checkDay(year,month,day);
+        //위 사항 종료
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -67,11 +87,7 @@ public class RecordFragment extends Fragment {
 
                 diaryTextView.setText(String.format("%d / %d / %d",year,month+1,dayOfMonth));
 //                contextEditText.setText(contextEditText.getText());
-                contextEditText.setText(FoodFragment.plate_White_Message+"\n"+
-                                        FoodFragment.plate_Blue_Message+"\n"+
-                                        FoodFragment.plate_Black_Message+"\n"+
-                                        FoodFragment.plate_Red_Message+"\n");
-
+                //todo 윤서한테 물어봐야댐
 
                 checkDay(year,month,dayOfMonth);
             }
@@ -96,6 +112,7 @@ public class RecordFragment extends Fragment {
     public void  checkDay(int cYear,int cMonth,int cDay){
         fname=""+cYear+"-"+(cMonth+1)+""+"-"+cDay+".txt";//저장할 파일 이름설정
 //        fIname=""+cYear+"-"+(cMonth+1)+""+"-"+cDay+".png";//저장할 이미지파일 이름 설정
+
         FileInputStream fis = null;//FileStream fis 변수
 
         try{
@@ -114,6 +131,8 @@ public class RecordFragment extends Fragment {
             save_Btn.setVisibility(View.INVISIBLE);
             cha_Btn.setVisibility(View.VISIBLE);
             del_Btn.setVisibility(View.VISIBLE);
+
+
 
             cha_Btn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -159,7 +178,7 @@ public class RecordFragment extends Fragment {
         FileOutputStream fos=null;
 
         try{
-            fos= getContext().openFileOutput(readDay, MODE_NO_LOCALIZED_COLLATORS);
+            fos= getContext().openFileOutput(readDay, Context.MODE_PRIVATE);
             String content="";
             fos.write((content).getBytes());
             fos.close();
@@ -171,9 +190,8 @@ public class RecordFragment extends Fragment {
     @SuppressLint("WrongConstant")
     public void saveDiary(String readDay){
         FileOutputStream fos=null;
-
         try{
-            fos= getContext().openFileOutput(readDay, MODE_NO_LOCALIZED_COLLATORS);
+            fos= getContext().openFileOutput(readDay, Context.MODE_PRIVATE);
             String content=contextEditText.getText().toString();
             fos.write((content).getBytes());
             fos.close();
