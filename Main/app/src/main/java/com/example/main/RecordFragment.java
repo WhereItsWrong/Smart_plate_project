@@ -4,6 +4,9 @@ import static android.content.Context.MODE_NO_LOCALIZED_COLLATORS;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
@@ -25,16 +29,26 @@ import java.util.Date;
 import java.util.Locale;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 public class RecordFragment extends Fragment {
     public String fname=null;
+    public String fname_img=null;
     public String str=null;
+    public Bitmap bitmap = null;
     public CalendarView calendarView;
-    public Button cha_Btn,del_Btn,save_Btn;
+    public Button cha_Btn,del_Btn,save_Btn, select_btn2;
     public TextView diaryTextView,textView2,textView3;
     public EditText contextEditText;
     public ImageView record_Img;
+    public String imgpath = null;
+
+    public CharSequence select_text = null;
+
+    public int day_tmp = 0;
+    public int month_tmp = 0;
+    public int year_tmp = 0;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_record, container, false);
@@ -44,6 +58,7 @@ public class RecordFragment extends Fragment {
         save_Btn=view.findViewById(R.id.save_Btn);
         del_Btn=view.findViewById(R.id.del_Btn);
         cha_Btn=view.findViewById(R.id.cha_Btn);
+        select_btn2 = view.findViewById(R.id.select_btn2);
         textView2=view.findViewById(R.id.textView2);
         textView3=view.findViewById(R.id.textView3);
         contextEditText=view.findViewById(R.id.contextEditText);
@@ -81,7 +96,11 @@ public class RecordFragment extends Fragment {
                 textView2.setVisibility(View.INVISIBLE);
                 cha_Btn.setVisibility(View.INVISIBLE);
                 del_Btn.setVisibility(View.INVISIBLE);
-                record_Img.setVisibility(View.VISIBLE);
+                record_Img.setVisibility(View.INVISIBLE);
+
+                day_tmp = dayOfMonth;
+                month_tmp = month;
+                year_tmp = year;
 
                 diaryTextView.setText(String.format("%d / %d / %d",year,month+1,dayOfMonth));
 //                contextEditText.setText(contextEditText.getText());
@@ -105,16 +124,49 @@ public class RecordFragment extends Fragment {
 
             }
         });
+        select_btn2.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                final CharSequence[] oItems = {"아침","점심","저녁"};
+
+                AlertDialog.Builder oDialog = new AlertDialog.Builder(getActivity(),
+                        android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+
+                oDialog.setTitle("식사 선택")
+                        .setItems(oItems, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                select_text = oItems[which];
+                                select_btn2.setText(select_text);
+
+                                diaryTextView.setVisibility(View.VISIBLE);
+                                save_Btn.setVisibility(View.VISIBLE);
+                                contextEditText.setVisibility(View.VISIBLE);
+                                textView2.setVisibility(View.INVISIBLE);
+                                cha_Btn.setVisibility(View.INVISIBLE);
+                                del_Btn.setVisibility(View.INVISIBLE);
+                                record_Img.setVisibility(View.INVISIBLE);
+                                checkDay(year_tmp,month_tmp,day_tmp);
+
+                            }
+                        })
+                        .setCancelable(false)
+                        .show();
+
+            }
+        });
         return view;
     }
     public void  checkDay(int cYear,int cMonth,int cDay){
-        fname=""+cYear+"-"+(cMonth+1)+""+"-"+cDay+".txt";//저장할 파일 이름설정
-//        fIname=""+cYear+"-"+(cMonth+1)+""+"-"+cDay+".png";//저장할 이미지파일 이름 설정
+        fname=""+cYear+"-"+(cMonth+1)+""+"-"+cDay+select_btn2.getText()+".txt";//저장할 파일 이름설정
+        fname_img=""+ cYear +"-"+(cMonth+1)+""+"-"+cDay+select_btn2.getText()+".png";
 
         FileInputStream fis = null;//FileStream fis 변수
 
         try{
-            fis= getContext().openFileInput(fname);
+            fis = getContext().openFileInput(fname);
 
             byte[] fileData=new byte[fis.available()];
             fis.read(fileData);
@@ -122,13 +174,27 @@ public class RecordFragment extends Fragment {
 
             str=new String(fileData);
 
+
+            imgpath = "data/data/com.example.main/files/";
+            imgpath += fname_img;
+
+            Bitmap bm = BitmapFactory.decodeFile(imgpath);
+
+            imgpath = null;
+
             contextEditText.setVisibility(View.INVISIBLE);
             textView2.setVisibility(View.VISIBLE);
             textView2.setText(str);
 
+            record_Img.setVisibility(View.VISIBLE);
+            record_Img.setImageBitmap(bm);
+
+
             save_Btn.setVisibility(View.INVISIBLE);
             cha_Btn.setVisibility(View.VISIBLE);
             del_Btn.setVisibility(View.VISIBLE);
+
+
 
 
 
@@ -174,12 +240,42 @@ public class RecordFragment extends Fragment {
     @SuppressLint("WrongConstant")
     public void removeDiary(String readDay){
         FileOutputStream fos=null;
+        record_Img.setVisibility(View.INVISIBLE);
+        imgpath = "data/data/com.example.main/files/";
 
         try{
-            fos= getContext().openFileOutput(readDay, Context.MODE_PRIVATE);
-            String content="";
-            fos.write((content).getBytes());
-            fos.close();
+            File file = new File(imgpath);
+            File[] flist = file.listFiles();
+            for (int i = 0; i < flist.length; i++) {
+                String tmp = flist[i].getName();
+                if(tmp.equals(fname)){
+                    flist[i].delete();
+                }
+            }
+
+            // 텍스트 파일 삭제
+//            fos= getContext().openFileOutput(readDay, Context.MODE_PRIVATE);
+//            String content="";
+//            fos.write((content).getBytes());
+//            fos.close();
+
+            //  비트맵 이미지 삭제
+
+
+            try {
+                File file_img = new File(imgpath);
+                File[] flist_img = file_img.listFiles();
+                for (int i = 0; i < flist_img.length; i++) {
+                    String tmp = flist_img[i].getName();
+                    if(tmp.equals(fname_img)){
+                        flist_img[i].delete();
+                    }
+                }
+                imgpath = null;
+            }
+            catch(Exception e){
+
+            }
 
         }catch (Exception e){
             e.printStackTrace();

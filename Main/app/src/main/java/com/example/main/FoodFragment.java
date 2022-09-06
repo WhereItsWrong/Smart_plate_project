@@ -4,6 +4,7 @@ import static android.content.Context.MODE_NO_LOCALIZED_COLLATORS;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -17,12 +18,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import java.io.File;
@@ -40,6 +43,7 @@ public class FoodFragment extends Fragment {
 
     public Button get_btn_picture;
     public Button button3;
+    public Button select_btn;
     public ImageView imgV;
     public File file;
 
@@ -51,6 +55,7 @@ public class FoodFragment extends Fragment {
     //기록 페이지 전달용 변수(텍스트)
 
     public String Message = "";
+    public CharSequence select_text = null;
 
     Date currentTime = Calendar.getInstance().getTime();
 
@@ -63,11 +68,12 @@ public class FoodFragment extends Fragment {
     int day = Integer.parseInt(dayFormat.format(currentTime));
 
     //내장메모리에 저장할 파일 이름(형식 포함)
-    String fname=""+ year +"-"+(month)+""+"-"+day+".txt";
-    String fname_img=""+ year +"-"+(month)+""+"-"+day+".png";
+    String fname=""+ year +"-"+(month)+""+"-"+day;
+    String fname_img=""+ year +"-"+(month)+""+"-"+day;
 
 
     private static final int REQUEST_IMAGE_CODE = 101;
+
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         //TODO 스태틱을 사용해 MainActiviy의 비콘 메세지(그릇당 무게값)을 전달받음.
@@ -86,6 +92,7 @@ public class FoodFragment extends Fragment {
         plate_White = view.findViewById(R.id.plate_White);
         plate_Blue = view.findViewById(R.id.plate_Blue);
         plate_Red = view.findViewById(R.id.plate_Red);
+        select_btn = view.findViewById(R.id.select_btn);
 
 
         imgV = view.findViewById(R.id.imageView);
@@ -98,6 +105,9 @@ public class FoodFragment extends Fragment {
             public void onClick(View v) {
                 FileOutputStream fos = null;
 
+                fname += select_text + ".txt";
+                fname_img += select_text + ".png";
+
                 try{
                     fos= getContext().openFileOutput(fname, Context.MODE_PRIVATE);
                     fos.write((Message).getBytes());
@@ -107,8 +117,6 @@ public class FoodFragment extends Fragment {
                 }
 
                 fos = null;
-
-
 
                 try{
                     fos= getContext().openFileOutput(fname_img, Context.MODE_PRIVATE);
@@ -162,10 +170,35 @@ public class FoodFragment extends Fragment {
                 }, 3000); //딜레이 타임 조절
 
             }
-        });
 
+        });
+        select_btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                final CharSequence[] oItems = {"아침","점심","저녁"};
+
+                AlertDialog.Builder oDialog = new AlertDialog.Builder(getActivity(),
+                        android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+
+                oDialog.setTitle("식사 선택")
+                        .setItems(oItems, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                select_text = oItems[which];
+                                select_btn.setText(select_text);
+                            }
+                        })
+                        .setCancelable(false)
+                        .show();
+
+            }
+        });
         return view; //attachToRoot: false 안함.
     }
+
+
 
 
     ActivityResultLauncher<Intent> activityResultPicture = registerForActivityResult(
