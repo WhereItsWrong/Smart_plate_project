@@ -8,15 +8,26 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,15 +45,26 @@ import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+import org.pytorch.IValue;
+import org.pytorch.LiteModuleLoader;
+import org.pytorch.Module;
+import org.pytorch.Tensor;
+import org.pytorch.torchvision.TensorImageUtils;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements BeaconConsumer {
+public class MainActivity extends AppCompatActivity implements BeaconConsumer, Runnable {
     // 홍승표 권한 허용의 잔재
 //    public static final int REQUEST_PERMISSION = 11;
     // TODO 처음에는 비콘 클래스를(Activity가 아닌) 따로 생성하여 FoodFragment에서 객체 선언 후 처리 시도,
@@ -70,13 +92,74 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     int beaconScanCount = 1; // [비콘 스캔 횟수를 카운트하기 위함]
     ArrayList beaconFormatList = new ArrayList<>(); // [스캔한 비콘 리스트를 포맷해서 저장하기 위함]
 
+    //비트맵 선언
+    Bitmap mBitmap = null;
+    //이미지 뷰 선언 (푸드 프래그먼트)
+    ImageView imgV = null;
+    //detect 버튼 선언
+    Button detectBtn = null;
+    //욜로 모듈 선언
+    private Module mModule = null;
+    //result 뷰 선언
+    private ResultView mResultView;
+    //욜로 관련 값
+    private float mImgScaleX, mImgScaleY, mIvScaleX, mIvScaleY, mStartX, mStartY;
+
     private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
     private static final int PERMISSION_REQUEST_BACKGROUND_LOCATION = 2;
     //TODO [비콘 스캐닝을 위한 초기 설정]
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
+        }
         setContentView(R.layout.activity_main);
+
+        mResultView = findViewById(R.id.resultView);
+        mResultView.setVisibility(View.INVISIBLE);
+
+        imgV = findViewById(R.id.imageView);
+
+        detectBtn= findViewById(R.id.detectBtn);
+        detectBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                detectBtn.setEnabled(false);
+
+                BitmapDrawable drawable = (BitmapDrawable) imgV.getDrawable();
+                mBitmap = drawable.getBitmap();
+
+                mImgScaleX = (float)mBitmap.getWidth() / PrePostProcessor.mInputWidth;
+                mImgScaleY = (float)mBitmap.getHeight() / PrePostProcessor.mInputHeight;
+
+                mIvScaleX = (mBitmap.getWidth() > mBitmap.getHeight() ? (float)imgV.getWidth() / mBitmap.getWidth() : (float)imgV.getHeight() / mBitmap.getHeight());
+                mIvScaleY  = (mBitmap.getHeight() > mBitmap.getWidth() ? (float)imgV.getHeight() / mBitmap.getHeight() : (float)imgV.getWidth() / mBitmap.getWidth());
+
+                mStartX = (imgV.getWidth() - mIvScaleX * mBitmap.getWidth())/2;
+                mStartY = (imgV.getHeight() -  mIvScaleY * mBitmap.getHeight())/2;
+
+                Thread thread = new Thread(MainActivity.this);
+                thread.start();
+            }
+        });
+        try {
+            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "yolov5s.torchscript.ptl"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes.txt")));
+            String line;
+            List<String> classes = new ArrayList<>();
+            while ((line = br.readLine()) != null) {
+                classes.add(line);
+            }
+            PrePostProcessor.mClasses = new String[classes.size()];
+            classes.toArray(PrePostProcessor.mClasses);
+        } catch (IOException e) {
+            Log.e("Object Detection", "Error reading assets", e);
+            finish();
+        }
 
         //TODO 홍승표 버전 권한 설정 - 논의 필요
 //      checkPermission();
@@ -90,13 +173,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         Log.d("---","---");
 
 
-
         //TODO [비콘 매니저 초기 설정 및 레이아웃 지정 실시]
         BeaconSettiong();
         if(getBleStateCheck() == true){ // [블루투스 및 GPS 기능이 모두 활성 상태]
             BeaconScanStart(); //[비콘 스캔 시작 실시]
         }
-
 
         NavigationBarView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnItemSelectedListener(navListener);
@@ -104,6 +185,65 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
 
     }
+
+
+    public static String assetFilePath(Context context, String assetName) throws IOException {
+        File file = new File(context.getFilesDir(), assetName);
+        if (file.exists() && file.length() > 0) {
+            return file.getAbsolutePath();
+        }
+
+        try (InputStream is = context.getAssets().open(assetName)) {
+            try (OutputStream os = new FileOutputStream(file)) {
+                byte[] buffer = new byte[4 * 1024];
+                int read;
+                while ((read = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, read);
+                }
+                os.flush();
+            }
+            return file.getAbsolutePath();
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_CANCELED) {
+            switch (requestCode) {
+                case 0:
+                    if (resultCode == RESULT_OK && data != null) {
+                        mBitmap = (Bitmap) data.getExtras().get("data");
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(90.0f);
+                        mBitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), matrix, true);
+                        imgV.setImageBitmap(mBitmap);
+                    }
+                    break;
+                case 1:
+                    if (resultCode == RESULT_OK && data != null) {
+                        Uri selectedImage = data.getData();
+                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                        if (selectedImage != null) {
+                            Cursor cursor = getContentResolver().query(selectedImage,
+                                    filePathColumn, null, null, null);
+                            if (cursor != null) {
+                                cursor.moveToFirst();
+                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                String picturePath = cursor.getString(columnIndex);
+                                mBitmap = BitmapFactory.decodeFile(picturePath);
+                                Matrix matrix = new Matrix();
+                                matrix.postRotate(90.0f);
+                                mBitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), matrix, true);
+                                imgV.setImageBitmap(mBitmap);
+                                cursor.close();
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
     public void BeaconSettiong(){
         Log.d("---","---");
         Log.d("//===========//","================================================");
@@ -680,4 +820,23 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
                 return true;
             };
+
+    @Override
+    public void run() {
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(mBitmap, PrePostProcessor.mInputWidth, PrePostProcessor.mInputHeight, true);
+        final Tensor inputTensor = TensorImageUtils.bitmapToFloat32Tensor(resizedBitmap, PrePostProcessor.NO_MEAN_RGB, PrePostProcessor.NO_STD_RGB);
+        IValue[] outputTuple = mModule.forward(IValue.from(inputTensor)).toTuple();
+        final Tensor outputTensor = outputTuple[0].toTensor();
+        final float[] outputs = outputTensor.getDataAsFloatArray();
+        final ArrayList<Result> results =  PrePostProcessor.outputsToNMSPredictions(outputs, mImgScaleX, mImgScaleY, mIvScaleX, mIvScaleY, mStartX, mStartY);
+
+        runOnUiThread(() -> {
+            detectBtn.setEnabled(true);
+
+
+            mResultView.setResults(results);
+            mResultView.invalidate();
+            mResultView.setVisibility(View.VISIBLE);
+        });
+    }
 }

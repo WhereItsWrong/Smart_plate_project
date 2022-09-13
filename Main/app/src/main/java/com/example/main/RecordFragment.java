@@ -161,7 +161,8 @@ public class RecordFragment extends Fragment {
     }
     public void  checkDay(int cYear,int cMonth,int cDay){
         fname=""+cYear+"-"+(cMonth+1)+""+"-"+cDay+select_btn2.getText()+".txt";//저장할 파일 이름설정
-        fname_img=""+ cYear +"-"+(cMonth+1)+""+"-"+cDay+select_btn2.getText()+".png";
+        fname_img=""+ cYear +"-"+(cMonth+1)+""+"-"+cDay+select_btn2.getText()+
+                ".png";
 
         FileInputStream fis = null;//FileStream fis 변수
 
