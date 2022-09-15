@@ -54,7 +54,7 @@ public class FoodFragment extends Fragment {
 
     //기록 페이지 전달용 변수(텍스트)
 
-    public String Message = "";
+    public static String Message = "";
     public CharSequence select_text = null;
 
     Date currentTime = Calendar.getInstance().getTime();
@@ -137,37 +137,6 @@ public class FoodFragment extends Fragment {
                 activityResultPicture.launch(intent);
 
                 Message = "";
-                //3초 이후 무게정보 표시
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        if(!MainActivity.plate_White.equals("")) {
-                            plate_White.setVisibility(View.VISIBLE);
-                            plate_White.setText("흰색 그릇 :" +  MainActivity.plate_White + "g");
-                            Message += "흰색 그릇 :" +  MainActivity.plate_White + "g";
-                        }
-                        if(!MainActivity.plate_Black.equals("")) {
-                            plate_Black.setVisibility(View.VISIBLE);
-                            plate_Black.setText("검정색 그릇 :" + MainActivity.plate_Black + "g" );
-                            Message += "검정색 그릇 :" + MainActivity.plate_Black + "g";
-                        }
-                        if(!MainActivity.plate_Red.equals("")) {
-                            plate_Red.setVisibility(View.VISIBLE);
-                            plate_Red.setText("빨간색 그릇 : " + MainActivity.plate_Red + "g");
-                            Message += "빨간색 그릇 : " + MainActivity.plate_Red + "g";
-
-                        }
-                        if(!MainActivity.plate_Blue.equals("")) {
-                            plate_Blue.setVisibility(View.VISIBLE);
-                            plate_Blue.setText("파란색 그릇 :" + MainActivity.plate_Blue + "g");
-                            Message += "파란색 그릇 :" + MainActivity.plate_Blue + "g";
-                        }
-                        Log.d("---",MainActivity.beaconMessage);
-
-                    }
-                }, 3000); //딜레이 타임 조절
 
             }
 
@@ -192,7 +161,6 @@ public class FoodFragment extends Fragment {
                         })
                         .setCancelable(false)
                         .show();
-
             }
         });
         return view; //attachToRoot: false 안함.

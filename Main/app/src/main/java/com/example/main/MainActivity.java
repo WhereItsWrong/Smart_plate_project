@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -104,6 +105,13 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
     private ResultView mResultView;
     //욜로 관련 값
     private float mImgScaleX, mImgScaleY, mIvScaleX, mIvScaleY, mStartX, mStartY;
+    //푸드 프래그먼트 텍스트뷰 여기서 한번더 선언
+    TextView plate_white_textview;
+    TextView plate_black_textview;
+    TextView plate_blue_textview;
+    TextView plate_red_textview;
+
+
 
     private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
     private static final int PERMISSION_REQUEST_BACKGROUND_LOCATION = 2;
@@ -111,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
@@ -124,6 +133,12 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         mResultView.setVisibility(View.INVISIBLE);
 
         imgV = findViewById(R.id.imageView);
+
+        //
+        plate_white_textview = findViewById(R.id.plate_White);
+        plate_black_textview = findViewById(R.id.plate_Black);;
+        plate_blue_textview = findViewById(R.id.plate_Blue);;
+        plate_red_textview = findViewById(R.id.plate_Red);;
 
         detectBtn= findViewById(R.id.detectBtn);
         detectBtn.setOnClickListener(new View.OnClickListener() {
@@ -144,6 +159,35 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
 
                 Thread thread = new Thread(MainActivity.this);
                 thread.start();
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        //plate_white는 무게값을 나타내는 String
+                        if (!plate_White.equals("")) {
+                            plate_white_textview.setVisibility(View.VISIBLE);
+                            plate_white_textview.setText("흰색 그릇 :" + plate_White + "g " + ResultView.white_plate_include);
+                            FoodFragment.Message += "흰색 그릇 :" + plate_White + "g"  + ResultView.white_plate_include;
+                        } else if (!plate_Black.equals("")) {
+                            plate_black_textview.setVisibility(View.VISIBLE);
+                            plate_black_textview.setText("검정색 그릇 :" + plate_Black + "g " + ResultView.black_plate_include);
+                            FoodFragment.Message += "검정색 그릇 :" + plate_Black + "g" + ResultView.black_plate_include;
+
+                        } else if (!plate_Red.equals("")) {
+                            plate_red_textview.setVisibility(View.VISIBLE);
+                            plate_red_textview.setText("빨간색 그릇 : " + plate_Red + "g " + ResultView.red_plate_include);
+                            FoodFragment.Message += "빨간색 그릇 : " + plate_Red + "g "+ ResultView.red_plate_include;
+
+                        } else if (!plate_Blue.equals("")) {
+                            plate_blue_textview.setVisibility(View.VISIBLE);
+                            plate_blue_textview.setText("파란색 그릇 :" + plate_Blue + "g "+ ResultView.blue_plate_include);
+                            FoodFragment.Message += "파란색 그릇 :" + plate_Blue + "g " + ResultView.blue_plate_include;
+                        }
+                    }
+                }  , 5000);
+                //TODO 객체 인식에 시간이 약 3초 걸림으로 여유롭게 5초 지정 (객체인식 종료시간 알아낼 수 있다면 지정 예정)
             }
         });
         try {

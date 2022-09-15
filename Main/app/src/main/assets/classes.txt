@@ -1,4 +1,4 @@
-person
+black_plate
 bicycle
 car
 motorcycle

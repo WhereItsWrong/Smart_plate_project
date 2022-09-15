@@ -17,6 +17,7 @@ class Result {
     int classIndex;
     Float score;
     Rect rect;
+    String includeable;
 
     public Result(int cls, Float output, Rect rect) {
         this.classIndex = cls;
