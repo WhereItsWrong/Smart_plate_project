@@ -1,8 +1,6 @@
 package com.example.main;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,7 +13,6 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,15 +24,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.navigation.NavigationBarView;
@@ -54,13 +47,13 @@ import org.pytorch.torchvision.TensorImageUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -68,28 +61,33 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements BeaconConsumer, Runnable {
     // 홍승표 권한 허용의 잔재
 //    public static final int REQUEST_PERMISSION = 11;
-    // TODO 처음에는 비콘 클래스를(Activity가 아닌) 따로 생성하여 FoodFragment에서 객체 선언 후 처리 시도,
-    // TODO 비콘을 처리하는 클래스는 Activity 클래스가 아니면 실행되지 않음 - BeaconScan.java 삭제후 MainActivy.java에 통합
-    // TODO 비콘 메세지를 FoodFragent로 보낼 방법이 없음으로 스태틱 선언- 추후 방법 찾을 시 수정할 것 (스태틱 사용이 안스에서 생명주기로 인해 추천되지 않음)
 
-    // TODO log를 위한 비콘 메세지
+    // 처음에는 비콘 클래스를(Activity가 아닌) 따로 생성하여 FoodFragment에서 객체 선언 후 처리 시도,
+    // 비콘을 처리하는 클래스는 Activity 클래스가 아니면 실행되지 않음 - BeaconScan.java 삭제후 MainActivy.java에 통합
+    //  비콘 메세지를 FoodFragent로 보낼 방법이 없음으로 스태틱 선언- 추후 방법 찾을 시 수정할 것 (스태틱 사용이 안스에서 생명주기로 인해 추천되지 않음)
+
+    // log를 위한 비콘 메세지
     static String beaconMessage = "";
 
-
-    //TODO [그릇색별 변수]
+    //[그릇색별 변수]
     static String plate_Black = "";
     static String plate_White = "";
     static String plate_Red = "";
     static String plate_Blue = "";
 
-    //TODO 권한객체 선언
+    String [] food_index = {"chicken", "salmon", "egg", "sweetpotato"};
+    int [] food_cal = {100, 200, 300, 400};
+    int [] food_pro = {100, 200, 300, 400};
+    int [] food_fat = {100, 200, 300, 400};
+
+    // 권한객체 선언
     private PermissionSupport permission;
 
-    //TODO [실시간 비콘 스캐닝을 하기 위한 변수 및 객체 선언 실시]
+    // [실시간 비콘 스캐닝을 하기 위한 변수 및 객체 선언 실시]
     private BeaconManager beaconManager; // [비콘 매니저 객체]
     private List<Beacon> beaconList = new ArrayList<>(); // [실시간 비콘 감지 배열]
 
-    //TODO 비콘을 위한 변수 선언
+    // 비콘을 위한 변수 선언
     int beaconScanCount = 1; // [비콘 스캔 횟수를 카운트하기 위함]
     ArrayList beaconFormatList = new ArrayList<>(); // [스캔한 비콘 리스트를 포맷해서 저장하기 위함]
 
@@ -115,19 +113,13 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
 
     private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
     private static final int PERMISSION_REQUEST_BACKGROUND_LOCATION = 2;
-    //TODO [비콘 스캐닝을 위한 초기 설정]
+    //[비콘 스캐닝을 위한 초기 설정]
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        }
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
-        }
         setContentView(R.layout.activity_main);
+        permissionCheck();
 
         mResultView = findViewById(R.id.resultView);
         mResultView.setVisibility(View.INVISIBLE);
@@ -140,56 +132,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         plate_blue_textview = findViewById(R.id.plate_Blue);;
         plate_red_textview = findViewById(R.id.plate_Red);;
 
-        detectBtn= findViewById(R.id.detectBtn);
-        detectBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                detectBtn.setEnabled(false);
-
-                BitmapDrawable drawable = (BitmapDrawable) imgV.getDrawable();
-                mBitmap = drawable.getBitmap();
-
-                mImgScaleX = (float)mBitmap.getWidth() / PrePostProcessor.mInputWidth;
-                mImgScaleY = (float)mBitmap.getHeight() / PrePostProcessor.mInputHeight;
-
-                mIvScaleX = (mBitmap.getWidth() > mBitmap.getHeight() ? (float)imgV.getWidth() / mBitmap.getWidth() : (float)imgV.getHeight() / mBitmap.getHeight());
-                mIvScaleY  = (mBitmap.getHeight() > mBitmap.getWidth() ? (float)imgV.getHeight() / mBitmap.getHeight() : (float)imgV.getWidth() / mBitmap.getWidth());
-
-                mStartX = (imgV.getWidth() - mIvScaleX * mBitmap.getWidth())/2;
-                mStartY = (imgV.getHeight() -  mIvScaleY * mBitmap.getHeight())/2;
-
-                Thread thread = new Thread(MainActivity.this);
-                thread.start();
-
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        //plate_white는 무게값을 나타내는 String
-                        if (!plate_White.equals("")) {
-                            plate_white_textview.setVisibility(View.VISIBLE);
-                            plate_white_textview.setText("흰색 그릇 :" + plate_White + "g " + ResultView.white_plate_include);
-                            FoodFragment.Message += "흰색 그릇 :" + plate_White + "g"  + ResultView.white_plate_include;
-                        } else if (!plate_Black.equals("")) {
-                            plate_black_textview.setVisibility(View.VISIBLE);
-                            plate_black_textview.setText("검정색 그릇 :" + plate_Black + "g " + ResultView.black_plate_include);
-                            FoodFragment.Message += "검정색 그릇 :" + plate_Black + "g" + ResultView.black_plate_include;
-
-                        } else if (!plate_Red.equals("")) {
-                            plate_red_textview.setVisibility(View.VISIBLE);
-                            plate_red_textview.setText("빨간색 그릇 : " + plate_Red + "g " + ResultView.red_plate_include);
-                            FoodFragment.Message += "빨간색 그릇 : " + plate_Red + "g "+ ResultView.red_plate_include;
-
-                        } else if (!plate_Blue.equals("")) {
-                            plate_blue_textview.setVisibility(View.VISIBLE);
-                            plate_blue_textview.setText("파란색 그릇 :" + plate_Blue + "g "+ ResultView.blue_plate_include);
-                            FoodFragment.Message += "파란색 그릇 :" + plate_Blue + "g " + ResultView.blue_plate_include;
-                        }
-                    }
-                }  , 5000);
-                //TODO 객체 인식에 시간이 약 3초 걸림으로 여유롭게 5초 지정 (객체인식 종료시간 알아낼 수 있다면 지정 예정)
-            }
-        });
+        detectBtn= (Button)findViewById(R.id.detectBtn);
+        DetectListener dt = new DetectListener();
+        detectBtn.setOnClickListener(dt);
         try {
             mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "yolov5s.torchscript.ptl"));
             BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes.txt")));
@@ -205,10 +150,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
             finish();
         }
 
+
         //TODO 홍승표 버전 권한 설정 - 논의 필요
 //      checkPermission();
 
-        permissionCheck();
+
 
         Log.d("---","---");
         Log.d("//===========//","================================================");
@@ -217,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         Log.d("---","---");
 
 
-        //TODO [비콘 매니저 초기 설정 및 레이아웃 지정 실시]
+        // [비콘 매니저 초기 설정 및 레이아웃 지정 실시]
         BeaconSettiong();
         if(getBleStateCheck() == true){ // [블루투스 및 GPS 기능이 모두 활성 상태]
             BeaconScanStart(); //[비콘 스캔 시작 실시]
@@ -226,8 +172,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         NavigationBarView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnItemSelectedListener(navListener);
         getSupportActionBar().setTitle("                             스마트 그릇");
-
-
     }
 
 
@@ -249,6 +193,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
             return file.getAbsolutePath();
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -296,13 +241,13 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         Log.d("//===========//","================================================");
         Log.d("---","---");
         try {
-            //TODO [비콘 매니저 생성]
+            // [비콘 매니저 생성]
             beaconManager = BeaconManager.getInstanceForApplication(MainActivity.this);
 
-            //TODO [블루투스가 스캔을 중지하지 않도록 설정]
+            // [블루투스가 스캔을 중지하지 않도록 설정]
             beaconManager.setEnableScheduledScanJobs(false);
 
-            //TODO [레이아웃 지정 - IOS , Android 모두 스캔 가능]
+            // [레이아웃 지정 - IOS , Android 모두 스캔 가능]
             beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         }
         catch (Exception e){
@@ -310,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         }
     }
 
-    //TODO [실시간 비콘 스캐닝 시작]
+    //[실시간 비콘 스캐닝 시작]
     public void BeaconScanStart(){
         Log.d("---","---");
         Log.w("//===========//","================================================");
@@ -320,13 +265,13 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
 
 
         try {
-            //TODO [변수값 초기화 실시]
+            //[변수값 초기화 실시]
             beaconScanCount = 1;
 
-            //TODO [beaconManager Bind 설정]
+            // [beaconManager Bind 설정]
             beaconManager.bind(MainActivity.this);
 
-            //TODO [실시간 비콘 스캔 수행 핸들러 호출]
+            //[실시간 비콘 스캔 수행 핸들러 호출]
             BeaconHandler.sendEmptyMessage(0);
         }
         catch (Exception e){
@@ -334,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         }
     }
 
-    //TODO [실시간 비콘 스캐닝 종료]
+    // [실시간 비콘 스캐닝 종료]
     public void BeaconScanStop(){
         Log.d("---","---");
         Log.e("//===========//","================================================");
@@ -342,14 +287,14 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         Log.e("//===========//","================================================");
         Log.d("---","---");
         try {
-            //TODO [변수값 초기화 실시]
+            //[변수값 초기화 실시]
             beaconScanCount = 1;
 
-            //TODO [핸들러 사용 종료]
+            //[핸들러 사용 종료]
             BeaconHandler.removeMessages(0);
             BeaconHandler.removeCallbacks(null);
 
-            //TODO [beaconManager Bind 해제]
+            // [beaconManager Bind 해제]
             beaconManager.unbind(MainActivity.this);
         }
         catch (Exception e){
@@ -357,14 +302,14 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         }
     }
 
-    //TODO [실시간 비콘 스캐닝 감지 부분]
+    // [실시간 비콘 스캐닝 감지 부분]
     @Override
     public void onBeaconServiceConnect() {
         RangeNotifier rangeNotifier = new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                //TODO [비콘이 감지되면 해당 함수가 호출]
-                //TODO [비콘들에 대응하는 Region 객체가 들어들어옴]
+                // [비콘이 감지되면 해당 함수가 호출]
+                // [비콘들에 대응하는 Region 객체가 들어들어옴]
                 if (beacons.size() > 0) {
                     beaconList.clear();
                     for (Beacon beacon : beacons) {
@@ -390,14 +335,14 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
             int beaconCount = 0;
             beaconMessage = "";
             try {
-                //TODO [기존에 저장된 배열 데이터 초기화 실시]
+                //[기존에 저장된 배열 데이터 초기화 실시]
                 if(beaconFormatList.size() > 0){
                     beaconFormatList.clear();
                 }
 
-                //TODO [for 문 사용해 실시간 스캔된 비콘 개별 정보 확인]
+                // [for 문 사용해 실시간 스캔된 비콘 개별 정보 확인]
                 for(Beacon beacon : beaconList){
-                    /** TODO [비콘 스캔 정보 추출 참고]
+                    /** [비콘 스캔 정보 추출 참고]
                      Log.d("//===========//","================================================");
                      Log.d("","\n"+"[비콘 스캔 Name] "+" ["+String.valueOf(beacon.getBluetoothName())+"]");
                      Log.d("","\n"+"[비콘 스캔 MAC] "+" ["+String.valueOf(beacon.getBluetoothAddress())+"]");
@@ -424,8 +369,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                     beaconCount += 1;
 
                     tmp = String.valueOf(beacon.getId1());
-                    //TODO 비콘이름을 가지고 판별, 다만 현재 AT커맨드로 비콘 이름을 바꾸는것이 불안정하기 때문에 수정될 수 있음
-                    //TODO 이름 포함을 통해 무게 추출(uuid값을 사용)
+                    // 비콘이름을 가지고 판별, 다만 현재 AT커맨드로 비콘 이름을 바꾸는것이 불안정하기 때문에 수정될 수 있음
+                    // 이름 포함을 통해 무게 추출(uuid값을 사용)
                     if(tmp.contains("aaaa")){
                         plate_White = String.valueOf(beacon.getId1()).substring(0,8);
                     }
@@ -440,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                     }
 
 
-                    //TODO [스캔한 비콘 정보 포맷 실시]
+                    // [스캔한 비콘 정보 포맷 실시]
                     /*
                     JSONObject jsonBeacon = new JSONObject();
                     jsonBeacon.put("UUID", String.valueOf(beacon.getBluetoothName())+"\n");
@@ -451,13 +396,13 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                     jsonBeacon.put("UUID", String.valueOf(beacon.getId1().toString())+"\n");
                     */
 
-                    //TODO [배열에 데이터 저장 실시]
+                    // [배열에 데이터 저장 실시]
                     //beaconFormatList.add(jsonBeacon.toString());
 
 
-                }//TODO [for 문 종료]
+                }//[for 문 종료]
 
-                //TODO [실시간 스캔된 비콘 정보 확인 실시]
+                // [실시간 스캔된 비콘 정보 확인 실시]
                 Log.d("---","---");
                 Log.w("//===========//","================================================");
                 Log.d("","\n"+"[비콘 스캔 실행 횟수] "+" ["+String.valueOf(beaconScanCount)+"]");
@@ -467,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                 Log.w("//===========//","================================================");
                 Log.d("---","---");
 
-                //TODO [텍스트뷰 처리를 위한 비콘 메세지 입력]
+                // [텍스트뷰 처리를 위한 비콘 메세지 입력]
 
                 //비콘 메세지 입력
                 if(Integer.parseInt(plate_White) != 0) {
@@ -484,16 +429,16 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                 }
                 // else if가 아니고 if 이면 beaconscanCount가 안오르는 현상이 존재함(확인필요)
 
-                //TODO [중간 필요한 로직 처리 실시]
+                // [중간 필요한 로직 처리 실시]
 
-                //TODO [비콘 스캔 카운트 증가]
+                // [비콘 스캔 카운트 증가]
                 beaconScanCount ++;
             }
             catch (Exception e){
                 e.printStackTrace();
             }
 
-            //TODO [자기 자신을 1초마다 호출]
+            // [자기 자신을 1초마다 호출]
 
             // 기존 beacontry 프로젝트때 활용한 메소드(신경x)
 //            beaconText.setText(beaconMessage);
@@ -509,14 +454,14 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         boolean state_result = false;
         try {
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if(mBluetoothAdapter == null){ //TODO [블루투스를 지원하는 기기인지 확인]
+            if(mBluetoothAdapter == null){ //[블루투스를 지원하는 기기인지 확인]
                 Log.d("---","---");
                 Log.e("//===========//","================================================");
                 Log.d("","\n"+"[BeaconScan > getBleStateCheck() 메소드 : 블루투스 지원 기기 확인]");
                 Log.d("","\n"+"[디바이스 : 블루투스를 지원하지 않는 기기]");
                 Log.e("//===========//","================================================");
                 Log.d("---","---");
-                //TODO [Alert 팝업창 알림 실시]
+                //[Alert 팝업창 알림 실시]
                 String alertTitle = "[블루투스 기능 지원 여부 확인]";
                 String alertMessage = "사용자 디바이스는 블루투스 기능을 지원하지 않는 단말기입니다.";
                 String buttonYes = "확인";
@@ -528,18 +473,18 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                         .setPositiveButton(buttonYes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // TODO Auto-generated method stub
+                                // Auto-generated method stub
                             }
                         })
                         .setNegativeButton(buttonNo, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // TODO Auto-generated method stub
+                                // Auto-generated method stub
                             }
                         })
                         .show();
             }
-            else { //TODO [블루투스가 켜져있는지 확인]
+            else { //[블루투스가 켜져있는지 확인]
                 Log.d("---","---");
                 Log.w("//===========//","================================================");
                 Log.d("","\n"+"[BeaconScan > getBleStateCheck() 메소드 : 블루투스 지원 기기 확인]");
@@ -648,7 +593,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         return state_result;
     }
 
-    //TODO [안드로이드 시스템 블루투스 설정창 이동 메소드]
+    //[안드로이드 시스템 블루투스 설정창 이동 메소드]
     public void goBleSettingsIntent(){
         try {
             Log.d("---","---");
@@ -666,7 +611,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         }
     }
 
-    //TODO [안드로이드 시스템 GPS 설정창 이동 메소드]
+    //[안드로이드 시스템 GPS 설정창 이동 메소드]
     public void goGpsSettingsIntent(){
         try {
             Log.d("---","---");
@@ -725,22 +670,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
     }
 
     // [액티비티 실행 준비 메소드]
-    @Override
-    public void onResume(){
-        super.onResume();
-        Log.d("---","---");
-        Log.d("//===========//","================================================");
-        Log.d("","\n"+"[BeaconScan > onResume() 메소드 : 액티비티 실행 준비 실시]");
-        Log.d("//===========//","================================================");
-        Log.d("---","---");
-        try {
-            //TODO [외부 브라우저 복귀 시 화면 전환 애니메이션 없애기 위함]
-            overridePendingTransition(0,0);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+
 
     // todo 권한설정 메세지 박스(안드 구버전에서는 정상 작동, 최신버전에서는 권한 거부가 2회 이상시 "다시묻지않음"이 자동으로 설정되 논리 오류)
     void showDialog() {
@@ -865,6 +795,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                 return true;
             };
 
+
+
     @Override
     public void run() {
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(mBitmap, PrePostProcessor.mInputWidth, PrePostProcessor.mInputHeight, true);
@@ -882,5 +814,147 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
             mResultView.invalidate();
             mResultView.setVisibility(View.VISIBLE);
         });
+    }
+
+    class DetectListener implements View.OnClickListener{
+        @Override
+        public void onClick(View v) {
+            detectBtn.setEnabled(false);
+
+            BitmapDrawable drawable = (BitmapDrawable) imgV.getDrawable();
+            mBitmap = drawable.getBitmap();
+
+            mImgScaleX = (float)mBitmap.getWidth() / PrePostProcessor.mInputWidth;
+            mImgScaleY = (float)mBitmap.getHeight() / PrePostProcessor.mInputHeight;
+
+            mIvScaleX = (mBitmap.getWidth() > mBitmap.getHeight() ? (float)imgV.getWidth() / mBitmap.getWidth() : (float)imgV.getHeight() / mBitmap.getHeight());
+            mIvScaleY  = (mBitmap.getHeight() > mBitmap.getWidth() ? (float)imgV.getHeight() / mBitmap.getHeight() : (float)imgV.getWidth() / mBitmap.getWidth());
+
+            mStartX = (imgV.getWidth() - mIvScaleX * mBitmap.getWidth())/2;
+            mStartY = (imgV.getHeight() -  mIvScaleY * mBitmap.getHeight())/2;
+
+            Thread thread = new Thread(MainActivity.this);
+            thread.start();
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    //plate_white는 무게값을 나타내는 String
+                    if (!plate_White.equals("")) {
+                        if(Arrays.asList(food_index).indexOf(ResultView.black_plate_include) != -1) {
+                            plate_white_textview.setVisibility(View.VISIBLE);
+                            plate_white_textview.setText("흰색 그릇 :" + plate_White + "g " + ResultView.white_plate_include + "\n"
+                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
+                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
+                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n");
+                            FoodFragment.Message += plate_white_textview.getText().toString();
+                        }
+                        else{
+                            plate_white_textview.setVisibility(View.VISIBLE);
+                            plate_white_textview.setText("흰색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+                        }
+                        ResultView.white_plate_include = null;
+
+
+                    } else if (!plate_Black.equals("")) {
+                        if(Arrays.asList(food_index).indexOf(ResultView.black_plate_include) != -1){
+                            plate_black_textview.setVisibility(View.VISIBLE);
+                            plate_black_textview.setText("검정색 그릇 :" + plate_Black + "g " + ResultView.black_plate_include +"\n"
+                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black)  +"\n"
+                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black)  +"\n"
+                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black) + "\n");
+                            FoodFragment.Message += plate_black_textview.getText().toString();
+                        }
+                        else{
+                            plate_black_textview.setVisibility(View.VISIBLE);
+                            plate_black_textview.setText("검정색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+                        }
+                        ResultView.black_plate_include = null;
+
+                    } else if (!plate_Red.equals("")) {
+                        if(Arrays.asList(food_index).indexOf(ResultView.black_plate_include) != -1) {
+                            plate_red_textview.setVisibility(View.VISIBLE);
+                            plate_red_textview.setText("빨간색 그릇 :" + plate_Red + "g " + ResultView.red_plate_include + "\n"
+                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
+                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
+                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n");
+                            FoodFragment.Message += plate_red_textview.getText().toString();
+                        }
+                        else{
+                            plate_red_textview.setVisibility(View.VISIBLE);
+                            plate_red_textview.setText("빨간색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+                        }
+                        ResultView.red_plate_include = null;
+
+                    } else if (!plate_Blue.equals("")) {
+                        if(Arrays.asList(food_index).indexOf(ResultView.black_plate_include) != -1) {
+                            plate_blue_textview.setVisibility(View.VISIBLE);
+                            plate_blue_textview.setText("파란색 그릇 :" + plate_Blue + "g " + ResultView.blue_plate_include + "\n"
+                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
+                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
+                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n");
+                            FoodFragment.Message += plate_blue_textview.getText().toString();
+                        }
+                        else{
+                            plate_blue_textview.setVisibility(View.VISIBLE);
+                            plate_blue_textview.setText("파란색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+                        }
+                        ResultView.blue_plate_include = null;
+                    }
+                }
+            }  , 5000);
+            //TODO객체 인식에 시간이 약 3초 걸림으로 여유롭게 5초 지정 (객체인식 종료시간 알아낼 수 있다면 지정 예정)
+        }
+
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        /*
+        YOLO를(Detect버튼을) FoodFragment에 구현해야 했지만 프래그먼트 잇슈로(현재 프래그먼트에서 detect버튼 구현 시 실행이 안되는 지능 한계 존재) detect버튼을
+        억지로 MainActivity에 우겨넣음으로 인해 프래그먼트 전환 시 푸드프래그먼트의 xml요소들이 해제되는 상황 발생.
+        해결 대칙으로 onResume() 에 한번 더 선언.
+         */
+        mResultView = findViewById(R.id.resultView);
+        mResultView.setVisibility(View.INVISIBLE);
+
+        plate_white_textview = findViewById(R.id.plate_White);
+        plate_black_textview = findViewById(R.id.plate_Black);;
+        plate_blue_textview = findViewById(R.id.plate_Blue);;
+        plate_red_textview = findViewById(R.id.plate_Red);;
+
+        try {
+            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "yolov5s.torchscript.ptl"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes.txt")));
+            String line;
+            List<String> classes = new ArrayList<>();
+            while ((line = br.readLine()) != null) {
+                classes.add(line);
+            }
+            PrePostProcessor.mClasses = new String[classes.size()];
+            classes.toArray(PrePostProcessor.mClasses);
+        } catch (IOException e) {
+            Log.e("Object Detection", "Error reading assets", e);
+            finish();
+        }
+
+        detectBtn= (Button)findViewById(R.id.detectBtn);
+        DetectListener dt = new DetectListener();
+        detectBtn.setOnClickListener(dt);
+        Log.d("---","---");
+        Log.d("//===========//","================================================");
+        Log.d("","\n"+"[BeaconScan > onResume() 메소드 : 액티비티 실행 준비 실시]");
+        Log.d("//===========//","================================================");
+        Log.d("---","---");
+        try {
+            //TODO [외부 브라우저 복귀 시 화면 전환 애니메이션 없애기 위함]
+            overridePendingTransition(0,0);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 }

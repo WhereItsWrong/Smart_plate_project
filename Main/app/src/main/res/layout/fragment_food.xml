@@ -110,17 +110,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="선택" />
+            android:text="식사선택" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/save_btn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="저장하기" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/delect_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -131,7 +131,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Button" />
+            android:text="음식인식" />
 
     </LinearLayout>
 </LinearLayout>

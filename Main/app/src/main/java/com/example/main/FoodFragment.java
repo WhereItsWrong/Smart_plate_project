@@ -1,7 +1,5 @@
 package com.example.main;
 
-import static android.content.Context.MODE_NO_LOCALIZED_COLLATORS;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,16 +7,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
-import android.os.Handler;
+
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -29,7 +25,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -42,15 +37,18 @@ public class FoodFragment extends Fragment {
     Bitmap bitmap;
 
     public Button get_btn_picture;
-    public Button button3;
+    public Button save_btn;
     public Button select_btn;
+    public Button del_btn;
     public ImageView imgV;
-    public File file;
+
 
     public TextView plate_White;
     public TextView plate_Red;
     public TextView plate_Black;
     public TextView plate_Blue;
+
+    public ResultView resultView;
 
     //기록 페이지 전달용 변수(텍스트)
 
@@ -83,9 +81,11 @@ public class FoodFragment extends Fragment {
 
         //사진 버튼 선언
         get_btn_picture = view.findViewById(R.id.btn_picture);
+        resultView = view.findViewById(R.id.resultView);
 
-        //TODO 버튼 미정
-        button3 = view.findViewById(R.id.button3);
+
+        save_btn = view.findViewById(R.id.save_btn);
+        del_btn = view.findViewById(R.id.delect_btn);
 
         //그릇 객체 선언
         plate_Black = view.findViewById(R.id.plate_Black);
@@ -97,9 +97,8 @@ public class FoodFragment extends Fragment {
 
         imgV = view.findViewById(R.id.imageView);
 
-
         //TODO 저장버튼
-        button3.setOnClickListener(new View.OnClickListener(){
+        save_btn.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -163,9 +162,24 @@ public class FoodFragment extends Fragment {
                         .show();
             }
         });
-        return view; //attachToRoot: false 안함.
-    }
+        del_btn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                imgV.setImageBitmap(null);
 
+                plate_Black.setText(null);
+                plate_Red.setText(null);
+                plate_White.setText(null);
+                plate_Blue.setText(null);
+
+                Message = "";
+
+                resultView.setVisibility(View.INVISIBLE);
+            }
+        });
+        return view; //attachToRoot: false 안함.
+
+    }
 
 
 
