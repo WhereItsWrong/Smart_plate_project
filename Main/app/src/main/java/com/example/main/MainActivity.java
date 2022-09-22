@@ -60,7 +60,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements BeaconConsumer, Runnable {
     // 홍승표 권한 허용의 잔재
-//    public static final int REQUEST_PERMISSION = 11;
+    //public static final int REQUEST_PERMISSION = 11;
 
     // 처음에는 비콘 클래스를(Activity가 아닌) 따로 생성하여 FoodFragment에서 객체 선언 후 처리 시도,
     // 비콘을 처리하는 클래스는 Activity 클래스가 아니면 실행되지 않음 - BeaconScan.java 삭제후 MainActivy.java에 통합
@@ -136,8 +136,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         DetectListener dt = new DetectListener();
         detectBtn.setOnClickListener(dt);
         try {
-            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "yolov5s.torchscript.ptl"));
-            BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes.txt")));
+            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "Chicken_Salmon.torchscript.ptl"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes2.txt")));
             String line;
             List<String> classes = new ArrayList<>();
             while ((line = br.readLine()) != null) {
@@ -926,8 +926,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         plate_red_textview = findViewById(R.id.plate_Red);;
 
         try {
-            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "yolov5s.torchscript.ptl"));
-            BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes.txt")));
+            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "Chicken_Salmon.torchscript.ptl"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes2.txt")));
             String line;
             List<String> classes = new ArrayList<>();
             while ((line = br.readLine()) != null) {

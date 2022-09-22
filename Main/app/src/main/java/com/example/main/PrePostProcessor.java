@@ -17,7 +17,6 @@ class Result {
     int classIndex;
     Float score;
     Rect rect;
-    String includeable;
 
     public Result(int cls, Float output, Rect rect) {
         this.classIndex = cls;
@@ -37,7 +36,7 @@ public class PrePostProcessor {
 
     // model output is of size 25200*(num_of_class+5)
     private static int mOutputRow = 25200; // as decided by the YOLOv5 model for input image of size 640*640
-    private static int mOutputColumn = 85; // left, top, right, bottom, score and 80 class probability
+    private static int mOutputColumn = 7; // left, top, right, bottom, score and 80 class probability
     private static float mThreshold = 0.30f; // score above which a detection is generated
     private static int mNmsLimit = 15;
 
