@@ -16,7 +16,7 @@
         android:fontFamily="sans-serif-black"
         android:gravity="center"
         android:text="나의 음식 정보"
-        android:textColor="#673AB7" />
+        android:textColor="@color/black" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -44,21 +44,54 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
-        android:id="@+id/btn_picture"
-        android:layout_width="171dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="0.7"
-        android:gravity="center"
-        android:text="사진 촬영" />
+        android:layout_weight="0.7">
+
+        <Button
+            android:id="@+id/btn_picture"
+            android:layout_width="150dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="0.7"
+            android:gravity="center"
+            android:text="사진 촬영"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_picture"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="115dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.98"
+            app:layout_constraintStart_toEndOf="@+id/btn_picture"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.481" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4.6">
+        android:layout_weight="4.3">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -99,6 +132,14 @@
         </LinearLayout>
     </ScrollView>
 
+    <TextView
+        android:id="@+id/total"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.3"
+        android:text="asdf"
+        android:textSize="14sp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -106,11 +147,11 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/select_btn"
+            android:id="@+id/detectBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="식사선택" />
+            android:text="음식인식" />
 
         <Button
             android:id="@+id/save_btn"
@@ -126,12 +167,6 @@
             android:layout_weight="1"
             android:text="삭제하기" />
 
-        <Button
-            android:id="@+id/detectBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="음식인식" />
-
     </LinearLayout>
+
 </LinearLayout>

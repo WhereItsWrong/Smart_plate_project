@@ -76,9 +76,12 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
     static String plate_Blue = "";
 
     String [] food_index = {"chicken", "salmon", "egg", "sweetpotato"};
-    int [] food_cal = {100, 200, 300, 400};
-    int [] food_pro = {100, 200, 300, 400};
-    int [] food_fat = {100, 200, 300, 400};
+    double[] food_cal = {1.9, 1.4, 0.56, 1.3};
+    double[] food_car = {0, 0, 0 ,0.29};
+    double [] food_pro = {0.23, 0.19, 0.12, 0.01};
+    double [] food_fat = {0.01, 0.06, 0, 0};
+    int[] total_result = {0,0,0,0};
+
 
     // 권한객체 선언
     private PermissionSupport permission;
@@ -108,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
     TextView plate_black_textview;
     TextView plate_blue_textview;
     TextView plate_red_textview;
+    TextView total;
 
 
 
@@ -131,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         plate_black_textview = findViewById(R.id.plate_Black);;
         plate_blue_textview = findViewById(R.id.plate_Blue);;
         plate_red_textview = findViewById(R.id.plate_Red);;
+        total = findViewById(R.id.total);
 
         detectBtn= (Button)findViewById(R.id.detectBtn);
         DetectListener dt = new DetectListener();
@@ -171,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
 
         NavigationBarView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnItemSelectedListener(navListener);
-        getSupportActionBar().setTitle("                             스마트 그릇");
+        getSupportActionBar().setTitle("스마트 그릇");
     }
 
 
@@ -843,13 +848,18 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                 public void run() {
                     //plate_white는 무게값을 나타내는 String
                     if (!plate_White.equals("")) {
-                        if(Arrays.asList(food_index).indexOf(ResultView.black_plate_include) != -1) {
+                        if(Arrays.asList(food_index).indexOf(ResultView.white_plate_include) != -1) {
                             plate_white_textview.setVisibility(View.VISIBLE);
                             plate_white_textview.setText("흰색 그릇 :" + plate_White + "g " + ResultView.white_plate_include + "\n"
                                     + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
+                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
                                     + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
                                     + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n");
                             FoodFragment.Message += plate_white_textview.getText().toString();
+                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
+                            total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
+                            total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
+                            total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
                         }
                         else{
                             plate_white_textview.setVisibility(View.VISIBLE);
@@ -863,9 +873,14 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                             plate_black_textview.setVisibility(View.VISIBLE);
                             plate_black_textview.setText("검정색 그릇 :" + plate_Black + "g " + ResultView.black_plate_include +"\n"
                                     + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black)  +"\n"
+                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)] * Integer.parseInt(plate_Black) + "\n"
                                     + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black)  +"\n"
                                     + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black) + "\n");
                             FoodFragment.Message += plate_black_textview.getText().toString();
+                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
+                            total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
+                            total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
+                            total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
                         }
                         else{
                             plate_black_textview.setVisibility(View.VISIBLE);
@@ -874,13 +889,18 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                         ResultView.black_plate_include = null;
 
                     } else if (!plate_Red.equals("")) {
-                        if(Arrays.asList(food_index).indexOf(ResultView.black_plate_include) != -1) {
+                        if(Arrays.asList(food_index).indexOf(ResultView.red_plate_include) != -1) {
                             plate_red_textview.setVisibility(View.VISIBLE);
                             plate_red_textview.setText("빨간색 그릇 :" + plate_Red + "g " + ResultView.red_plate_include + "\n"
                                     + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
+                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
                                     + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
                                     + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n");
                             FoodFragment.Message += plate_red_textview.getText().toString();
+                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
+                            total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
+                            total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
+                            total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
                         }
                         else{
                             plate_red_textview.setVisibility(View.VISIBLE);
@@ -889,19 +909,30 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                         ResultView.red_plate_include = null;
 
                     } else if (!plate_Blue.equals("")) {
-                        if(Arrays.asList(food_index).indexOf(ResultView.black_plate_include) != -1) {
+                        if(Arrays.asList(food_index).indexOf(ResultView.blue_plate_include) != -1) {
                             plate_blue_textview.setVisibility(View.VISIBLE);
                             plate_blue_textview.setText("파란색 그릇 :" + plate_Blue + "g " + ResultView.blue_plate_include + "\n"
                                     + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
+                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
                                     + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
                                     + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n");
                             FoodFragment.Message += plate_blue_textview.getText().toString();
+                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+                            total_result[1] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+                            total_result[2] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+                            total_result[3] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+
                         }
                         else{
                             plate_blue_textview.setVisibility(View.VISIBLE);
                             plate_blue_textview.setText("파란색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
                         }
                         ResultView.blue_plate_include = null;
+                    }
+                    total.setText("총칼로리 : "+ total_result[0] + "       총탄수화물 : "+total_result[1] +"\n"+
+                                        "총단백질 : "+ total_result[2] + "       총지방 : "+ total_result[3]);
+                    for(int i = 0; i <4; i++){
+                        total_result[i]= 0;
                     }
                 }
             }  , 5000);

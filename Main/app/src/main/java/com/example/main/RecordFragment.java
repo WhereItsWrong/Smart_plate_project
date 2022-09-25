@@ -14,10 +14,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import android.annotation.SuppressLint;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.File;
@@ -38,17 +41,20 @@ public class RecordFragment extends Fragment {
     public String str=null;
     public Bitmap bitmap = null;
     public CalendarView calendarView;
-    public Button cha_Btn,del_Btn,save_Btn, select_btn2;
+    public Button cha_Btn,del_Btn,save_Btn;
     public TextView diaryTextView,textView2,textView3;
     public EditText contextEditText;
     public ImageView record_Img;
     public String imgpath = null;
+    public Spinner spinner2;
 
     public CharSequence select_text = null;
 
     public int day_tmp = 0;
     public int month_tmp = 0;
     public int year_tmp = 0;
+
+
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_record, container, false);
@@ -58,11 +64,12 @@ public class RecordFragment extends Fragment {
         save_Btn=view.findViewById(R.id.save_Btn);
         del_Btn=view.findViewById(R.id.del_Btn);
         cha_Btn=view.findViewById(R.id.cha_Btn);
-        select_btn2 = view.findViewById(R.id.select_btn2);
+
         textView2=view.findViewById(R.id.textView2);
         textView3=view.findViewById(R.id.textView3);
         contextEditText=view.findViewById(R.id.contextEditText);
         record_Img=view.findViewById(R.id.recordImg);
+        spinner2 = view.findViewById(R.id.spinner2);
 //        //로그인 및 회원가입 엑티비티에서 이름을 받아옴
 //        Intent intent=getIntent();
 //        String name=intent.getStringExtra("userName");
@@ -82,6 +89,14 @@ public class RecordFragment extends Fragment {
         int day = Integer.parseInt(dayFormat.format(currentTime));
         diaryTextView.setText(String.format("%d / %d / %d",year,month,day));
 //                contextEditText.setText(contextEditText.getText());
+
+        final String[] items = {"선택","아침","점심","저녁"};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String> (
+                this.getActivity() , android.R.layout.simple_spinner_item,items);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner2.setAdapter(adapter);
+
         //todo 윤서한테 물어봐야댐
 
         checkDay(year,month,day);
@@ -90,6 +105,7 @@ public class RecordFragment extends Fragment {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                diaryTextView.setText(null);
                 diaryTextView.setVisibility(View.VISIBLE);
                 save_Btn.setVisibility(View.VISIBLE);
                 contextEditText.setVisibility(View.VISIBLE);
@@ -124,45 +140,63 @@ public class RecordFragment extends Fragment {
 
             }
         });
-        select_btn2.setOnClickListener(new View.OnClickListener(){
+//        select_btn2.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                final CharSequence[] oItems = {"아침","점심","저녁"};
+//
+//                AlertDialog.Builder oDialog = new AlertDialog.Builder(getActivity(),
+//                        android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+//
+//                oDialog.setTitle("식사 선택")
+//                        .setItems(oItems, new DialogInterface.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which)
+//                            {
+//                                select_text = oItems[which];
+//                                select_btn2.setText(select_text);
+//
+//                                diaryTextView.setVisibility(View.VISIBLE);
+//                                save_Btn.setVisibility(View.VISIBLE);
+//                                contextEditText.setVisibility(View.VISIBLE);
+//                                textView2.setVisibility(View.INVISIBLE);
+//                                cha_Btn.setVisibility(View.INVISIBLE);
+//                                del_Btn.setVisibility(View.INVISIBLE);
+//                                record_Img.setVisibility(View.INVISIBLE);
+//                                checkDay(year_tmp,month_tmp,day_tmp);
+//
+//                            }
+//                        })
+//                        .setCancelable(false)
+//                        .show();
+//
+//            }
+//        });
+        spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                final CharSequence[] oItems = {"아침","점심","저녁"};
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                diaryTextView.setVisibility(View.VISIBLE);
+                save_Btn.setVisibility(View.VISIBLE);
+                contextEditText.setVisibility(View.VISIBLE);
+                textView2.setVisibility(View.INVISIBLE);
+                cha_Btn.setVisibility(View.INVISIBLE);
+                del_Btn.setVisibility(View.INVISIBLE);
+                record_Img.setVisibility(View.INVISIBLE);
+                checkDay(year_tmp,month_tmp,day_tmp);
 
-                AlertDialog.Builder oDialog = new AlertDialog.Builder(getActivity(),
-                        android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+            }
 
-                oDialog.setTitle("식사 선택")
-                        .setItems(oItems, new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which)
-                            {
-                                select_text = oItems[which];
-                                select_btn2.setText(select_text);
-
-                                diaryTextView.setVisibility(View.VISIBLE);
-                                save_Btn.setVisibility(View.VISIBLE);
-                                contextEditText.setVisibility(View.VISIBLE);
-                                textView2.setVisibility(View.INVISIBLE);
-                                cha_Btn.setVisibility(View.INVISIBLE);
-                                del_Btn.setVisibility(View.INVISIBLE);
-                                record_Img.setVisibility(View.INVISIBLE);
-                                checkDay(year_tmp,month_tmp,day_tmp);
-
-                            }
-                        })
-                        .setCancelable(false)
-                        .show();
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
         return view;
     }
     public void  checkDay(int cYear,int cMonth,int cDay){
-        fname=""+cYear+"-"+(cMonth+1)+""+"-"+cDay+select_btn2.getText()+".txt";//저장할 파일 이름설정
-        fname_img=""+ cYear +"-"+(cMonth+1)+""+"-"+cDay+select_btn2.getText()+
-                ".png";
+        fname=""+cYear+"-"+(cMonth+1)+""+"-"+cDay+spinner2.getSelectedItem().toString()+".txt";//저장할 파일 이름설정
+        fname_img=""+ cYear +"-"+(cMonth+1)+""+"-"+cDay+spinner2.getSelectedItem().toString()+ ".png";
 
         FileInputStream fis = null;//FileStream fis 변수
 

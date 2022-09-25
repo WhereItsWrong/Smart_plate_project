@@ -12,8 +12,10 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResult;
@@ -38,7 +40,7 @@ public class FoodFragment extends Fragment {
 
     public Button get_btn_picture;
     public Button save_btn;
-    public Button select_btn;
+
     public Button del_btn;
     public ImageView imgV;
 
@@ -47,7 +49,9 @@ public class FoodFragment extends Fragment {
     public TextView plate_Red;
     public TextView plate_Black;
     public TextView plate_Blue;
+    public TextView date;
 
+    public Spinner spinner;
     public ResultView resultView;
 
     //기록 페이지 전달용 변수(텍스트)
@@ -69,8 +73,11 @@ public class FoodFragment extends Fragment {
     String fname=""+ year +"-"+(month)+""+"-"+day;
     String fname_img=""+ year +"-"+(month)+""+"-"+day;
 
+    String date_str = year +"/"+(month)+""+"/"+day;
+
 
     private static final int REQUEST_IMAGE_CODE = 101;
+
 
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
@@ -83,6 +90,7 @@ public class FoodFragment extends Fragment {
         get_btn_picture = view.findViewById(R.id.btn_picture);
         resultView = view.findViewById(R.id.resultView);
 
+        date = view.findViewById(R.id.date);
 
         save_btn = view.findViewById(R.id.save_btn);
         del_btn = view.findViewById(R.id.delect_btn);
@@ -92,10 +100,23 @@ public class FoodFragment extends Fragment {
         plate_White = view.findViewById(R.id.plate_White);
         plate_Blue = view.findViewById(R.id.plate_Blue);
         plate_Red = view.findViewById(R.id.plate_Red);
-        select_btn = view.findViewById(R.id.select_btn);
 
+        spinner = view.findViewById(R.id.spinner);
 
         imgV = view.findViewById(R.id.imageView);
+
+        date.setText(date_str);
+
+        final String[] items = {"선택","아침","점심","저녁"};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String> (
+                this.getActivity() , android.R.layout.simple_spinner_item,items);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+
+
+
 
         //TODO 저장버튼
         save_btn.setOnClickListener(new View.OnClickListener(){
@@ -104,8 +125,9 @@ public class FoodFragment extends Fragment {
             public void onClick(View v) {
                 FileOutputStream fos = null;
 
-                fname += select_text + ".txt";
-                fname_img += select_text + ".png";
+                fname += spinner.getSelectedItem().toString() + ".txt";
+                fname_img += spinner.getSelectedItem().toString() + ".png";
+
 
                 try{
                     fos= getContext().openFileOutput(fname, Context.MODE_PRIVATE);
@@ -138,29 +160,6 @@ public class FoodFragment extends Fragment {
                 Message = "";
 
             }
-
-        });
-        select_btn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                final CharSequence[] oItems = {"아침","점심","저녁"};
-
-                AlertDialog.Builder oDialog = new AlertDialog.Builder(getActivity(),
-                        android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
-
-                oDialog.setTitle("식사 선택")
-                        .setItems(oItems, new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which)
-                            {
-                                select_text = oItems[which];
-                                select_btn.setText(select_text);
-                            }
-                        })
-                        .setCancelable(false)
-                        .show();
-            }
         });
         del_btn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -177,6 +176,28 @@ public class FoodFragment extends Fragment {
                 resultView.setVisibility(View.INVISIBLE);
             }
         });
+        //        select_btn.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                final CharSequence[] oItems = {"아침","점심","저녁"};
+//
+//                AlertDialog.Builder oDialog = new AlertDialog.Builder(getActivity(),
+//                        android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+//
+//                oDialog.setTitle("식사 선택")
+//                        .setItems(oItems, new DialogInterface.OnClickListener()
+//                        {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which)
+//                            {
+//                                select_text = oItems[which];
+//                                select_btn.setText(select_text);
+//                            }
+//                        })
+//                        .setCancelable(false)
+//                        .show();
+//            }
+//        });
         return view; //attachToRoot: false 안함.
 
     }
