@@ -2,9 +2,11 @@ yolov5/runs/*
 
 yolov5/annotation_chicken/*
 yolov5/annotation_salmon/*
+yolov5/annotation_black_PLATE/*
 
 yolov5/chickenIMGs/*.jpg
 yolov5/salmonIMGs/*.jpg
+yolov5/black_PLATEIMGs/*.jpg
 
 yolov5/__pycache__/*
 yolov5/models/__pycache__/*
