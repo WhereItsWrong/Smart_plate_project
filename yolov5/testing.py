@@ -13,7 +13,7 @@ os.chdir("../../")          # 경로 전전으로 돌아가기 yolov5/
 # detect실행 (클래스, x, y, w, h, 신뢰도를 포함한 txt파일 저장)
 # (사진 저장되는 경로에 "labels/사진이름.txt" 형태로 저장됨)
 # files[-1] # 제일 최신 파일만 detecting
-os.system(f"python detect.py --source {source + files[-1]} --weights Chicken_Salmon.pt --save-txt --save-conf")
+os.system(f"python detect.py --source {source + files[-1]} --weights Chicken_Salmon_blackP.pt --save-txt --save-conf")
 
 file = Path(source + files[-1])     # detect한 이미지 파일 경로를 Path형태로 저장
 
