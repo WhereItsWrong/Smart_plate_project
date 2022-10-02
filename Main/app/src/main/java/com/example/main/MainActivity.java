@@ -1,6 +1,7 @@
 package com.example.main;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +14,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +27,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -114,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
     TextView total;
 
 
-
     private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
     private static final int PERMISSION_REQUEST_BACKGROUND_LOCATION = 2;
     //[비콘 스캐닝을 위한 초기 설정]
@@ -138,10 +140,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         total = findViewById(R.id.total);
 
         detectBtn= (Button)findViewById(R.id.detectBtn);
+
         DetectListener dt = new DetectListener();
         detectBtn.setOnClickListener(dt);
         try {
-            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "Chicken_Salmon.torchscript.ptl"));
+            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "Chicken_Salmon_blackP(1).torchscript.ptl"));
             BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes2.txt")));
             String line;
             List<String> classes = new ArrayList<>();
@@ -450,7 +453,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
 
 
             BeaconHandler.sendEmptyMessageDelayed(0, 1000);
-
         }
     };
 
@@ -812,131 +814,230 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         final ArrayList<Result> results =  PrePostProcessor.outputsToNMSPredictions(outputs, mImgScaleX, mImgScaleY, mIvScaleX, mIvScaleY, mStartX, mStartY);
 
         runOnUiThread(() -> {
-            detectBtn.setEnabled(true);
 
+            detectBtn.setEnabled(true);
 
             mResultView.setResults(results);
             mResultView.invalidate();
             mResultView.setVisibility(View.VISIBLE);
+
+            if (!plate_White.equals("")) {
+                if(Arrays.asList(food_index).indexOf(ResultView.white_plate_include) != -1) {
+                    plate_white_textview.setVisibility(View.VISIBLE);
+                    plate_white_textview.setText("흰색 그릇 :" + plate_White + "g " + ResultView.white_plate_include + "\n"
+                            + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
+                            + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
+                            + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
+                            + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n");
+                    FoodFragment.Message += plate_white_textview.getText().toString();
+                    total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
+                    total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
+                    total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
+                    total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
+                }
+                else{
+                    plate_white_textview.setVisibility(View.VISIBLE);
+                    plate_white_textview.setText("흰색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+                }
+                ResultView.white_plate_include = null;
+
+
+            } else if (!plate_Black.equals("")) {
+                if(Arrays.asList(food_index).indexOf(ResultView.black_plate_include) != -1){
+                    plate_black_textview.setVisibility(View.VISIBLE);
+                    plate_black_textview.setText("검정색 그릇 :" + plate_Black + "g " + ResultView.black_plate_include +"\n"
+                            + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black)  +"\n"
+                            + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)] * Integer.parseInt(plate_Black) + "\n"
+                            + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black)  +"\n"
+                            + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black) + "\n");
+                    FoodFragment.Message += plate_black_textview.getText().toString();
+                    total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
+                    total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
+                    total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
+                    total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
+                }
+                else{
+                    plate_black_textview.setVisibility(View.VISIBLE);
+                    plate_black_textview.setText("검정색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+                }
+                ResultView.black_plate_include = null;
+
+            } else if (!plate_Red.equals("")) {
+                if(Arrays.asList(food_index).indexOf(ResultView.red_plate_include) != -1) {
+                    plate_red_textview.setVisibility(View.VISIBLE);
+                    plate_red_textview.setText("빨간색 그릇 :" + plate_Red + "g " + ResultView.red_plate_include + "\n"
+                            + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
+                            + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
+                            + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
+                            + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n");
+                    FoodFragment.Message += plate_red_textview.getText().toString();
+                    total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
+                    total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
+                    total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
+                    total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
+                }
+                else{
+                    plate_red_textview.setVisibility(View.VISIBLE);
+                    plate_red_textview.setText("빨간색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+                }
+                ResultView.red_plate_include = null;
+
+            } else if (!plate_Blue.equals("")) {
+                if(Arrays.asList(food_index).indexOf(ResultView.blue_plate_include) != -1) {
+                    plate_blue_textview.setVisibility(View.VISIBLE);
+                    plate_blue_textview.setText("파란색 그릇 :" + plate_Blue + "g " + ResultView.blue_plate_include + "\n"
+                            + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
+                            + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
+                            + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
+                            + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n");
+                    FoodFragment.Message += plate_blue_textview.getText().toString();
+                    total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+                    total_result[1] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+                    total_result[2] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+                    total_result[3] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+
+                }
+                else{
+                    plate_blue_textview.setVisibility(View.VISIBLE);
+                    plate_blue_textview.setText("파란색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+                }
+                ResultView.blue_plate_include = null;
+            }
+            total.setText("총칼로리 : "+ total_result[0] + "       총탄수화물 : "+total_result[1] +"\n"+
+                    "총단백질 : "+ total_result[2] + "       총지방 : "+ total_result[3]);
+            for(int i = 0; i <4; i++){
+                total_result[i]= 0;
+            }
+
         });
     }
 
     class DetectListener implements View.OnClickListener{
+
         @Override
         public void onClick(View v) {
-            detectBtn.setEnabled(false);
+            try {
+                if(imgV != null) {
+                    BitmapDrawable drawable = (BitmapDrawable) imgV.getDrawable();
+                    mBitmap = drawable.getBitmap();
+                    detectBtn.setEnabled(false);
 
-            BitmapDrawable drawable = (BitmapDrawable) imgV.getDrawable();
-            mBitmap = drawable.getBitmap();
+                    mImgScaleX = (float) mBitmap.getWidth() / PrePostProcessor.mInputWidth;
+                    mImgScaleY = (float) mBitmap.getHeight() / PrePostProcessor.mInputHeight;
 
-            mImgScaleX = (float)mBitmap.getWidth() / PrePostProcessor.mInputWidth;
-            mImgScaleY = (float)mBitmap.getHeight() / PrePostProcessor.mInputHeight;
+                    mIvScaleX = (mBitmap.getWidth() > mBitmap.getHeight() ? (float) imgV.getWidth() / mBitmap.getWidth() : (float) imgV.getHeight() / mBitmap.getHeight());
+                    mIvScaleY = (mBitmap.getHeight() > mBitmap.getWidth() ? (float) imgV.getHeight() / mBitmap.getHeight() : (float) imgV.getWidth() / mBitmap.getWidth());
 
-            mIvScaleX = (mBitmap.getWidth() > mBitmap.getHeight() ? (float)imgV.getWidth() / mBitmap.getWidth() : (float)imgV.getHeight() / mBitmap.getHeight());
-            mIvScaleY  = (mBitmap.getHeight() > mBitmap.getWidth() ? (float)imgV.getHeight() / mBitmap.getHeight() : (float)imgV.getWidth() / mBitmap.getWidth());
-
-            mStartX = (imgV.getWidth() - mIvScaleX * mBitmap.getWidth())/2;
-            mStartY = (imgV.getHeight() -  mIvScaleY * mBitmap.getHeight())/2;
-
-            Thread thread = new Thread(MainActivity.this);
-            thread.start();
-
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    //plate_white는 무게값을 나타내는 String
-                    if (!plate_White.equals("")) {
-                        if(Arrays.asList(food_index).indexOf(ResultView.white_plate_include) != -1) {
-                            plate_white_textview.setVisibility(View.VISIBLE);
-                            plate_white_textview.setText("흰색 그릇 :" + plate_White + "g " + ResultView.white_plate_include + "\n"
-                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
-                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
-                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
-                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n");
-                            FoodFragment.Message += plate_white_textview.getText().toString();
-                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
-                            total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
-                            total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
-                            total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
-                        }
-                        else{
-                            plate_white_textview.setVisibility(View.VISIBLE);
-                            plate_white_textview.setText("흰색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
-                        }
-                        ResultView.white_plate_include = null;
+                    mStartX = (imgV.getWidth() - mIvScaleX * mBitmap.getWidth()) / 2;
+                    mStartY = (imgV.getHeight() - mIvScaleY * mBitmap.getHeight()) / 2;
 
 
-                    } else if (!plate_Black.equals("")) {
-                        if(Arrays.asList(food_index).indexOf(ResultView.black_plate_include) != -1){
-                            plate_black_textview.setVisibility(View.VISIBLE);
-                            plate_black_textview.setText("검정색 그릇 :" + plate_Black + "g " + ResultView.black_plate_include +"\n"
-                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black)  +"\n"
-                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)] * Integer.parseInt(plate_Black) + "\n"
-                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black)  +"\n"
-                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black) + "\n");
-                            FoodFragment.Message += plate_black_textview.getText().toString();
-                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
-                            total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
-                            total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
-                            total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
-                        }
-                        else{
-                            plate_black_textview.setVisibility(View.VISIBLE);
-                            plate_black_textview.setText("검정색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
-                        }
-                        ResultView.black_plate_include = null;
+                    Thread thread = new Thread(MainActivity.this);
+                    thread.start();
 
-                    } else if (!plate_Red.equals("")) {
-                        if(Arrays.asList(food_index).indexOf(ResultView.red_plate_include) != -1) {
-                            plate_red_textview.setVisibility(View.VISIBLE);
-                            plate_red_textview.setText("빨간색 그릇 :" + plate_Red + "g " + ResultView.red_plate_include + "\n"
-                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
-                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
-                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
-                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n");
-                            FoodFragment.Message += plate_red_textview.getText().toString();
-                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
-                            total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
-                            total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
-                            total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
-                        }
-                        else{
-                            plate_red_textview.setVisibility(View.VISIBLE);
-                            plate_red_textview.setText("빨간색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
-                        }
-                        ResultView.red_plate_include = null;
-
-                    } else if (!plate_Blue.equals("")) {
-                        if(Arrays.asList(food_index).indexOf(ResultView.blue_plate_include) != -1) {
-                            plate_blue_textview.setVisibility(View.VISIBLE);
-                            plate_blue_textview.setText("파란색 그릇 :" + plate_Blue + "g " + ResultView.blue_plate_include + "\n"
-                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
-                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
-                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
-                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n");
-                            FoodFragment.Message += plate_blue_textview.getText().toString();
-                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
-                            total_result[1] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
-                            total_result[2] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
-                            total_result[3] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
-
-                        }
-                        else{
-                            plate_blue_textview.setVisibility(View.VISIBLE);
-                            plate_blue_textview.setText("파란색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
-                        }
-                        ResultView.blue_plate_include = null;
-                    }
-                    total.setText("총칼로리 : "+ total_result[0] + "       총탄수화물 : "+total_result[1] +"\n"+
-                                        "총단백질 : "+ total_result[2] + "       총지방 : "+ total_result[3]);
-                    for(int i = 0; i <4; i++){
-                        total_result[i]= 0;
-                    }
                 }
-            }  , 5000);
-            //TODO객체 인식에 시간이 약 3초 걸림으로 여유롭게 5초 지정 (객체인식 종료시간 알아낼 수 있다면 지정 예정)
+            }
+            catch(Exception e){
+                Toast.makeText(getApplicationContext(), "사진 촬영 후 시도해 주십시오.", Toast.LENGTH_SHORT).show();
+
+            }
+
+//            Handler handler = new Handler();
+//            handler.postDelayed(new Runnable() {
+//
+//                @Override
+//                public void run() {
+//                    //plate_white는 무게값을 나타내는 String
+//                    if (!plate_White.equals("")) {
+//                        if(Arrays.asList(food_index).indexOf(ResultView.white_plate_include) != -1) {
+//                            plate_white_textview.setVisibility(View.VISIBLE);
+//                            plate_white_textview.setText("흰색 그릇 :" + plate_White + "g " + ResultView.white_plate_include + "\n"
+//                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
+//                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
+//                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n"
+//                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White) + "\n");
+//                            FoodFragment.Message += plate_white_textview.getText().toString();
+//                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
+//                            total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
+//                            total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
+//                            total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.white_plate_include)] * Integer.parseInt(plate_White);
+//                        }
+//                        else{
+//                            plate_white_textview.setVisibility(View.VISIBLE);
+//                            plate_white_textview.setText("흰색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+//                        }
+//                        ResultView.white_plate_include = null;
+//
+//
+//                    } else if (!plate_Black.equals("")) {
+//                        if(Arrays.asList(food_index).indexOf(ResultView.black_plate_include) != -1){
+//                            plate_black_textview.setVisibility(View.VISIBLE);
+//                            plate_black_textview.setText("검정색 그릇 :" + plate_Black + "g " + ResultView.black_plate_include +"\n"
+//                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black)  +"\n"
+//                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)] * Integer.parseInt(plate_Black) + "\n"
+//                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black)  +"\n"
+//                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black) + "\n");
+//                            FoodFragment.Message += plate_black_textview.getText().toString();
+//                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
+//                            total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
+//                            total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
+//                            total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.black_plate_include)]* Integer.parseInt(plate_Black);
+//                        }
+//                        else{
+//                            plate_black_textview.setVisibility(View.VISIBLE);
+//                            plate_black_textview.setText("검정색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+//                        }
+//                        ResultView.black_plate_include = null;
+//
+//                    } else if (!plate_Red.equals("")) {
+//                        if(Arrays.asList(food_index).indexOf(ResultView.red_plate_include) != -1) {
+//                            plate_red_textview.setVisibility(View.VISIBLE);
+//                            plate_red_textview.setText("빨간색 그릇 :" + plate_Red + "g " + ResultView.red_plate_include + "\n"
+//                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
+//                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
+//                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n"
+//                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red) + "\n");
+//                            FoodFragment.Message += plate_red_textview.getText().toString();
+//                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
+//                            total_result[1] += (int)food_car[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
+//                            total_result[2] += (int)food_pro[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
+//                            total_result[3] += (int)food_fat[Arrays.asList(food_index).indexOf(ResultView.red_plate_include)] * Integer.parseInt(plate_Red);
+//                        }
+//                        else{
+//                            plate_red_textview.setVisibility(View.VISIBLE);
+//                            plate_red_textview.setText("빨간색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+//                        }
+//                        ResultView.red_plate_include = null;
+//
+//                    } else if (!plate_Blue.equals("")) {
+//                        if(Arrays.asList(food_index).indexOf(ResultView.blue_plate_include) != -1) {
+//                            plate_blue_textview.setVisibility(View.VISIBLE);
+//                            plate_blue_textview.setText("파란색 그릇 :" + plate_Blue + "g " + ResultView.blue_plate_include + "\n"
+//                                    + "칼로리 : " + food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
+//                                    + "탄수화물 : " + food_car[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
+//                                    + "단백질 : " + food_pro[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n"
+//                                    + "지방 : " + food_fat[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue) + "\n");
+//                            FoodFragment.Message += plate_blue_textview.getText().toString();
+//                            total_result[0] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+//                            total_result[1] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+//                            total_result[2] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+//                            total_result[3] += (int)food_cal[Arrays.asList(food_index).indexOf(ResultView.blue_plate_include)] * Integer.parseInt(plate_Blue);
+//
+//                        }
+//                        else{
+//                            plate_blue_textview.setVisibility(View.VISIBLE);
+//                            plate_blue_textview.setText("파란색 그릇이 인식되었으나, 음식이 인식되지 않았습니다.");
+//                        }
+//                        ResultView.blue_plate_include = null;
+//                    }
+//                    total.setText("총칼로리 : "+ total_result[0] + "       총탄수화물 : "+total_result[1] +"\n"+
+//                                        "총단백질 : "+ total_result[2] + "       총지방 : "+ total_result[3]);
+//                    for(int i = 0; i <4; i++){
+//                        total_result[i]= 0;
+//                    }
+//                }
+//            }  , 5000);
+//            //TODO객체 인식에 시간이 약 3초 걸림으로 여유롭게 5초 지정 (객체인식 종료시간 알아낼 수 있다면 지정 예정)
         }
 
     }
@@ -951,13 +1052,19 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         mResultView = findViewById(R.id.resultView);
         mResultView.setVisibility(View.INVISIBLE);
 
+        imgV = findViewById(R.id.imageView);
+
         plate_white_textview = findViewById(R.id.plate_White);
-        plate_black_textview = findViewById(R.id.plate_Black);;
-        plate_blue_textview = findViewById(R.id.plate_Blue);;
-        plate_red_textview = findViewById(R.id.plate_Red);;
+        plate_black_textview = findViewById(R.id.plate_Black);
+        plate_blue_textview = findViewById(R.id.plate_Blue);
+        plate_red_textview = findViewById(R.id.plate_Red);
+
+        detectBtn= (Button)findViewById(R.id.detectBtn);
+        DetectListener dt = new DetectListener();
+        detectBtn.setOnClickListener(dt);
 
         try {
-            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "Chicken_Salmon.torchscript.ptl"));
+            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "Chicken_Salmon_blackP(1).torchscript.ptl"));
             BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes2.txt")));
             String line;
             List<String> classes = new ArrayList<>();
@@ -971,9 +1078,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
             finish();
         }
 
-        detectBtn= (Button)findViewById(R.id.detectBtn);
-        DetectListener dt = new DetectListener();
-        detectBtn.setOnClickListener(dt);
+
         Log.d("---","---");
         Log.d("//===========//","================================================");
         Log.d("","\n"+"[BeaconScan > onResume() 메소드 : 액티비티 실행 준비 실시]");
@@ -988,4 +1093,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         }
 
     }
+
+
 }
