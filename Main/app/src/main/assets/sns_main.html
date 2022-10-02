@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset = "UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>main</title>
+    <style>
+            a{
+                text-decoration: none;
+            }
+
+            /*업로드 창 들어가는 그림 css*/
+            .profile{
+                padding-top: 150%;
+                position: fixed;
+                padding-left: 75%;
+                float: right;
+                display: table-cell;
+            }
+
+            /*섹션 안에 있는 테이블 css*/
+            section table{
+                position: relative;
+                width: 100%;
+                margin-left: auto;
+                margin-right: auto;
+                box-shadow: 0px 0px 2px 0px;
+            }
+
+            .write {
+                position: absolute;
+            }
+
+            .write img{
+                width: 70px;
+                height: 70px;
+            }
+
+            .text_output{
+                margin-top: 5%;
+                margin-bottom: 5%;
+            }
+
+        </style>
+</head>
+<body>
+<aside class="profile"> <!--업로드 들어가는 링크 이미지-->
+    <div class="write">
+        <a href="sns_write.html"><img src="file:///android_res/drawable/upload.png" style="border-radius: 70%; -webkit-tap-highlight-color:  rgba(255, 255, 255, 0);"></a>
+    </div>
+</aside>
+
+<section class="main_text"> <!--업로드하는 창-->
+    <table style = "border:1px solid #FFF; border-radius: 10px;">
+        <tr>
+            <td style="padding-top: 5%; padding-left: 4%;">
+                <div><img src="file:///android_res/drawable/profile1.png" style="width:10%; height:auto; border-radius: 70%; vertical-align: middle;">
+                    <span style = "vertical-align: middle;">닉넴만여</span>
+                </div>
+            </td>
+        </tr>
+        <tr style="height: 30px;">
+            <td style="padding-top: 5%; padding-left: 4%; padding-right: 4%;">
+                <span style="font-size: 130%; float:left"><b>제목</b></span>
+                <span style="font-size: 60%; float:right;">9월 10일 오후 10:30</span>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding-left: 4%; padding-right: 4%; padding-top: 3%;">
+                <div class="text_output">
+                    테스트 글입니다<br>
+                    저는 공부하려고 블로그 작성중입니다.<br>
+                    제 블로그 간단하게 소개시켜드리겠습니다.<br>
+                    티스토리 블로그 링크는 <a href = "https:cow-coding.tistory.com">https:cow-coing.com</a>입니다.<br>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style = "padding-left: 4%; padding-right: 4%; padding-bottom: 5%;">
+                <p style = "text-align: right; margin-top: 1%; margin-bottom: 1%;">
+                    <a href="#">댓글</a>&nbsp;&nbsp;
+                    <a href="#">삭제</a>&nbsp;&nbsp;
+                </p>
+            </td>
+        </tr>
+    </table>
+</section>
+</body>
+</html>
