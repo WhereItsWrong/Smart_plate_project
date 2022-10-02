@@ -1,6 +1,6 @@
 
 # txt파일 경로
-path = "annotation_black_PLATE/"
+path = "annotationbP2/"
 
 # 기본값 설정
 index = 1
@@ -9,7 +9,7 @@ x = y = 0
 w = h = "0"
 
 # 416은 Left와 Right를 제외한 txt파일 개수
-for index in range(1, 326):
+for index in range(326, 425):
     with open(path + "black_PLATE_" + str(index) + ".txt", 'r') as f:
         for line in f:
             cls, x, y, w, h = line.split()
@@ -18,7 +18,7 @@ for index in range(1, 326):
         newFile.write(cls + " " + str(round(1 - float(y), 6)) + " " + x + " " + h + " " + w + "\n")
 
 
-for index in range(1, 326):
+for index in range(326, 425):
     with open(path + "black_PLATE_" + str(index) + ".txt", 'r') as f:
         for line in f:
             cls, x, y, w, h = line.split()
