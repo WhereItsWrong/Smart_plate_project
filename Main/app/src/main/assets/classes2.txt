@@ -1,2 +1,8 @@
 Chicken
 Salmon
+SweetPotato
+Egg
+White_PLATE
+Black_PLATE
+Red_PLATE
+Blue_PLATE
