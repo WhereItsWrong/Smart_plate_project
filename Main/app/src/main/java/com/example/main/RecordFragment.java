@@ -34,6 +34,7 @@ public class RecordFragment extends Fragment {
     public Button cha_Btn,del_Btn,save_Btn;
     public TextView diaryTextView,textView2,textView3;
     public EditText contextEditText;
+    
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_record, container, false);

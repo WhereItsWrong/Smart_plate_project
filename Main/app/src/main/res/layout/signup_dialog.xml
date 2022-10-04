@@ -7,7 +7,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter name"
+        android:hint="Enter nickname"
         android:id = "@+id/nameEdit"/>
 
     <EditText

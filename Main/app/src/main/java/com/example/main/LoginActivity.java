@@ -41,6 +41,11 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,11 +66,9 @@ public class LoginActivity extends AppCompatActivity {
     private TextView signup_text;
     private static globalApplication instance;
     private static String profile_img, nickname_u;
-    private String BASE_URL = "http://10.0.2.2:3000";
-
-    public static final String DATABASE_NAME = "user";
-    public static final String srl = "jdbc:mysql://database-1.ctf5tuczl6kc.ap-northeast-2.rds.amazonaws.com:3306/" + DATABASE_NAME;
-    public static final String username = "admin", password = "park6498";
+    private TextView Sign;
+    private EditText e_mail, pwd;
+    private ServiceApi service;
 
     public static final String TABLE_NAME = "user_vit";
 
@@ -76,12 +79,24 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("                             스마트 그릇");
         button_log_in = findViewById(R.id.log_in); //login 버튼
         button_kakao = findViewById(R.id.kakao_login_button); //kakao 연동 버튼
-        signup_text = findViewById(R.id.log_out); //가입 버튼
+        Sign = findViewById(R.id.signup);
+        e_mail = findViewById(R.id.editText_email);
+        pwd = findViewById(R.id.editText_password);
+
+        service = RetrofitClient.getClient().create(ServiceApi.class);
 
 
+
+        Sign.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), signup.class);
+                startActivity(intent);
+            }
+        });
 
         button_log_in.setOnClickListener(v -> {
-
+            attemptLogin();
         });
 
         button_kakao.setOnClickListener(new View.OnClickListener() {
@@ -90,15 +105,14 @@ public class LoginActivity extends AppCompatActivity {
                 if (UserApiClient.getInstance().isKakaoTalkLoginAvailable(LoginActivity.this)) {
                     login();
                     System.out.println(profile_img);
-
                 } else {
                     accountLogin();
                 }
-
             }
         });
 
-        signup_text.setOnClickListener(new View.OnClickListener() {
+
+        /*signup_text.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 UserApiClient.getInstance().logout(error -> {
@@ -110,19 +124,17 @@ public class LoginActivity extends AppCompatActivity {
                     return null;
                 });
             }
-        });
+        });*/
     }
 
     public void login() {
         String TAG = "login()";
         UserApiClient.getInstance().loginWithKakaoTalk(LoginActivity.this, (oAuthToken, error) -> {
-            //Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             if (error != null) {
                 Log.e(TAG, "로그인 실패", error);
             } else if (oAuthToken != null) {
                 Log.i(TAG, "로그인 성공(토큰) : " + oAuthToken.getAccessToken());
                 getUserInfo();
-                //startActivity(intent);
             }
             return null;
         });
@@ -132,12 +144,13 @@ public class LoginActivity extends AppCompatActivity {
         String TAG = "accountLogin()";
         UserApiClient.getInstance().loginWithKakaoAccount(LoginActivity.this, (oAuthToken, error) -> {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
             if (error != null) {
                 Log.e(TAG, "로그인 실패", error);
             } else if (oAuthToken != null) {
                 Log.i(TAG, "로그인 성공(토큰) : " + oAuthToken.getAccessToken());
                 getUserInfo();
-                startActivity(intent);
+
             }
             return null;
         });
@@ -193,5 +206,71 @@ public class LoginActivity extends AppCompatActivity {
         }
         return null;
     }
-}
 
+
+
+    private void attemptLogin() {
+        e_mail.setError(null);
+        pwd.setError(null);
+
+        String email = e_mail.getText().toString();
+        String password = pwd.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        // 패스워드의 유효성 검사
+        if (password.isEmpty()) {
+            e_mail.setError("비밀번호를 입력해주세요.");
+            focusView = e_mail;
+            cancel = true;
+        } else if (!isPasswordValid(password)) {
+            pwd.setError("6자 이상의 비밀번호를 입력해주세요.");
+            focusView = pwd;
+            cancel = true;
+        }
+
+        // 이메일의 유효성 검사
+        if (email.isEmpty()) {
+            e_mail.setError("이메일을 입력해주세요.");
+            focusView = e_mail;
+            cancel = true;
+        } else if (!isEmailValid(email)) {
+            e_mail.setError("@를 포함한 유효한 이메일을 입력해주세요.");
+            focusView = e_mail;
+            cancel = true;
+        }
+
+        if (cancel) {
+            focusView.requestFocus();
+        } else {
+            startLogin(new LoginData(email, password));
+        }
+    }
+
+    private void startLogin(LoginData data) {
+        service.userLogin(data).enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                LoginResponse result = response.body();
+                Toast.makeText(LoginActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "로그인 에러 발생", Toast.LENGTH_SHORT).show();
+                Log.e("로그인 에러 발생", t.getMessage());
+            }
+        });
+    }
+
+    private boolean isEmailValid(String email) {
+        return email.contains("@");
+    }
+
+    private boolean isPasswordValid(String password) {
+        return password.length() >= 6;
+    }
+}
