@@ -55,7 +55,6 @@ public class RecordFragment extends Fragment {
     public int year_tmp = 0;
 
 
-
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_record, container, false);
 

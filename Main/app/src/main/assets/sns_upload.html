@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript Alert Example</title>
+    <script>
+            function printdata() {
+                var f = document.getElementById('myform');
+
+                var txt = "";
+
+                for(var i = 0 ; i<f.length-1 ; i++){
+                    if(f.elements[i].type == "checkbox"){
+                        if(f.elements[i].checked)
+                            txt += f.elements[i].type + ' : ' + f.elements[i].value + '\n';
+                    } else if(f.elements[i].type == "radio"){
+                        if(f.elements[i].checked)
+                            txt += f.elements[i].type + ' : ' + f.elements[i].value + '\n';
+                    } else {
+                        txt += f.elements[i].type + ' : ' + f.elements[i].value + '\n';
+                    }
+                }
+                alert(txt);
+                }
+        </script>
+</head>
+<body>
+
+<header>
+    <a href = "sns_main.html"><img src="../bluetooth_bowl2.png" style = "width:50px; height: auto"></a>
+</header>
+<form id="myform">
+    <p>input the text : <input type="text" id="txt"></p>
+
+    <p>input password : <input thpe="password" id = "pw"></p>
+
+    <input type = "chectbox" name="ck" value="phone">phone
+    <input type = "checkbox" name = "ck" value = "computer">computer<br>
+
+    <label for = "male">Male</label>
+    <input type = "radio" name = "gender" id = "male" value = "male">
+    <label for = "female">Female</label>
+    <input type = "radio" name = "gender" id = "female" value = "female">
+
+    <p>select color : <input type = "color" id = "c"></p>
+
+    <p> birthday : <input type = "date" id = "d"></p>
+
+    <p><input type = "range" id = "r" min = "0" max = "10" value = "5"></p>
+
+    <p>Quantity (between 1 and 10) :
+        <input type = "number" id = "num" min = "1" max = "10" value = "1" step = "1">
+    </p>
+
+    <select id = "selectbox">
+        <option value = "select1">select1</option>
+        <option value = "select2">select2</option>
+        <option value = "select3">select3</option>
+        <option value = "select4">select4</option>
+    </select>
+
+    <textarea id = "textarea" cols = "10" rows = "5"></textarea>
+
+    <input type = "submit" value = "submit" onclick = "printdata()">
+</form>
+</body>
+</html>

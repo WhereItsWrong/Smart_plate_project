@@ -10,6 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {url 'https://devrepo.kakao.com/nexus/content/groups/public/'} //build.gradle에 안되서 settings.gradle에 설정 완료
     }
 }
 rootProject.name = "Main"

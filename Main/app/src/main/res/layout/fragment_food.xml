@@ -15,8 +15,10 @@
         android:layout_weight="0.6"
         android:fontFamily="sans-serif-black"
         android:gravity="center"
+
         android:text="나의 음식 정보"
         android:textColor="@color/black" />
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
