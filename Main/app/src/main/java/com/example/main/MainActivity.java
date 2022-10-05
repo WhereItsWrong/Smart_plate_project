@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         DetectListener dt = new DetectListener();
         detectBtn.setOnClickListener(dt);
         try {
-            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "yolov5s.torchscript.ptl"));
+            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "hf_22_109_result.torchscript.ptl"));
             BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes2.txt")));
             String line;
             List<String> classes = new ArrayList<>();
@@ -1069,7 +1069,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         detectBtn.setOnClickListener(dt);
 
         try {
-            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "yolov5s.torchscript.ptl"));
+            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "hf_22_109_result.torchscript.ptl"));
             BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes2.txt")));
             String line;
             List<String> classes = new ArrayList<>();
