@@ -86,7 +86,7 @@ public class ObjectDetectionActivity extends AbstractCameraXActivity<ObjectDetec
     protected AnalysisResult analyzeImage(ImageProxy image, int rotationDegrees) {
         try {
             if (mModule == null) {
-                mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "Chicken_Salmon_blackP(1).torchscript.ptl"));
+                mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "yolov5s.torchscript.ptl"));
             }
         } catch (IOException e) {
             Log.e("Object Detection", "Error reading assets", e);

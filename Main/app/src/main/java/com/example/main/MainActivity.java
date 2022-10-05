@@ -1,7 +1,6 @@
 package com.example.main;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,7 +13,6 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -78,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
     static String plate_Red = "";
     static String plate_Blue = "";
 
-    String [] food_index = {"chicken", "salmon", "egg", "sweetpotato"};
+    String [] food_index = {"Chicken", "Salmon", "Egg", "SweetPotato"};
     double[] food_cal = {1.9, 1.4, 0.56, 1.3};
     double[] food_car = {0, 0, 0 ,0.29};
     double [] food_pro = {0.23, 0.19, 0.12, 0.01};
@@ -144,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         DetectListener dt = new DetectListener();
         detectBtn.setOnClickListener(dt);
         try {
-            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "Chicken_Salmon_blackP(1).torchscript.ptl"));
+            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "yolov5s.torchscript.ptl"));
             BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes2.txt")));
             String line;
             List<String> classes = new ArrayList<>();
@@ -381,15 +379,19 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                     // 이름 포함을 통해 무게 추출(uuid값을 사용)
                     if(tmp.contains("aaaa")){
                         plate_White = String.valueOf(beacon.getId1()).substring(0,8);
+                        Log.d("","흰색그릇" + plate_White);
                     }
                     else if (tmp.contains("bbbb")){
                         plate_Red = String.valueOf(beacon.getId1()).substring(0,8);
+                        Log.d("","빨간색그릇" + plate_Red);
                     }
                     else if (tmp.contains("cccc")){
                         plate_Blue = String.valueOf(beacon.getId1()).substring(0,8);
+                        Log.d("","파란색그릇" + plate_Blue);
                     }
                     else if (tmp.contains("dddd")){
                         plate_Black = String.valueOf(beacon.getId1()).substring(0,8);
+                        Log.d("","검은색그릇" + plate_Black);
                     }
 
 
@@ -842,7 +844,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                 ResultView.white_plate_include = null;
 
 
-            } else if (!plate_Black.equals("")) {
+            }
+            if (!plate_Black.equals("")) {
                 if(Arrays.asList(food_index).indexOf(ResultView.black_plate_include) != -1){
                     plate_black_textview.setVisibility(View.VISIBLE);
                     plate_black_textview.setText("검정색 그릇 :" + plate_Black + "g " + ResultView.black_plate_include +"\n"
@@ -862,7 +865,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                 }
                 ResultView.black_plate_include = null;
 
-            } else if (!plate_Red.equals("")) {
+            }
+            if (!plate_Red.equals("")) {
                 if(Arrays.asList(food_index).indexOf(ResultView.red_plate_include) != -1) {
                     plate_red_textview.setVisibility(View.VISIBLE);
                     plate_red_textview.setText("빨간색 그릇 :" + plate_Red + "g " + ResultView.red_plate_include + "\n"
@@ -882,7 +886,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
                 }
                 ResultView.red_plate_include = null;
 
-            } else if (!plate_Blue.equals("")) {
+            }
+            if (!plate_Blue.equals("")) {
                 if(Arrays.asList(food_index).indexOf(ResultView.blue_plate_include) != -1) {
                     plate_blue_textview.setVisibility(View.VISIBLE);
                     plate_blue_textview.setText("파란색 그릇 :" + plate_Blue + "g " + ResultView.blue_plate_include + "\n"
@@ -1064,7 +1069,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer, R
         detectBtn.setOnClickListener(dt);
 
         try {
-            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "Chicken_Salmon_blackP(1).torchscript.ptl"));
+            mModule = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "yolov5s.torchscript.ptl"));
             BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("classes2.txt")));
             String line;
             List<String> classes = new ArrayList<>();

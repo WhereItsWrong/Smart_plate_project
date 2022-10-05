@@ -135,6 +135,8 @@ public class LoginActivity extends AppCompatActivity {
             } else if (oAuthToken != null) {
                 Log.i(TAG, "로그인 성공(토큰) : " + oAuthToken.getAccessToken());
                 getUserInfo();
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
             }
             return null;
         });
@@ -143,14 +145,14 @@ public class LoginActivity extends AppCompatActivity {
     public void accountLogin() {
         String TAG = "accountLogin()";
         UserApiClient.getInstance().loginWithKakaoAccount(LoginActivity.this, (oAuthToken, error) -> {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
+
             if (error != null) {
                 Log.e(TAG, "로그인 실패", error);
             } else if (oAuthToken != null) {
                 Log.i(TAG, "로그인 성공(토큰) : " + oAuthToken.getAccessToken());
                 getUserInfo();
-
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
             }
             return null;
         });
