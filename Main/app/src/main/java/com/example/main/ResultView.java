@@ -77,17 +77,17 @@ public class ResultView extends View {
             canvas.drawText(String.format("%s %.2f", PrePostProcessor.mClasses[result.classIndex], result.score), result.rect.left + TEXT_X, result.rect.top + TEXT_Y, mPaintText);
 
             //plate 텍스트가 포함된 result를 찾아 그릇 rect값에 대입
-            if( PrePostProcessor.mClasses[result.classIndex].contains("plate")){
-                if(PrePostProcessor.mClasses[result.classIndex].equals("white_plate")){
+            if( PrePostProcessor.mClasses[result.classIndex].contains("PLATE")){
+                if(PrePostProcessor.mClasses[result.classIndex].equals("White_PLATE")){
                     white_plate_rect = result.rect;
                 }
-                else if(PrePostProcessor.mClasses[result.classIndex].equals("black_plate")){
+                else if(PrePostProcessor.mClasses[result.classIndex].equals("Black_PLATE")){
                     black_plate_rect = result.rect;
                 }
-                else if(PrePostProcessor.mClasses[result.classIndex].equals("red_plate")){
+                else if(PrePostProcessor.mClasses[result.classIndex].equals("Red_PLATE")){
                     red_plate_rect = result.rect;
                 }
-                else if(PrePostProcessor.mClasses[result.classIndex].equals("blue_plate")){
+                else if(PrePostProcessor.mClasses[result.classIndex].equals("Blue_PLATE")){
                     blue_plate_rect = result.rect;
                 }
             }
@@ -95,7 +95,7 @@ public class ResultView extends View {
         //그릇과 음식의 포함관계를 파악하기 위해 중간값을 정하고 그릇안의 내용물이 뭔지 if문을 통해 저장
         //TODO plate_result를 그릇만 포함된 Result 배열로 지정하면 더 좋을것 같으나 우선순위로 인해 후에 처리 예정
         for (Result result : mResults) {
-            if (!PrePostProcessor.mClasses[result.classIndex].contains("plate")) {
+            if (!PrePostProcessor.mClasses[result.classIndex].contains("PLATE")) {
                 int result_middleY = (result.rect.top + result.rect.bottom) / 2;
                 int result_middleX = (result.rect.right + result.rect.left) / 2;
                 for (Result plate_result: mResults) {
@@ -104,13 +104,13 @@ public class ResultView extends View {
                                     plate_result.rect.bottom > result_middleY &&
                                     plate_result.rect.right > result_middleX &&
                                     plate_result.rect.left < result_middleX) {
-                        if (PrePostProcessor.mClasses[plate_result.classIndex].equals("white_plate")) {
+                        if (PrePostProcessor.mClasses[plate_result.classIndex].equals("White_PLATE")) {
                             white_plate_include = PrePostProcessor.mClasses[result.classIndex];
-                        } else if (PrePostProcessor.mClasses[plate_result.classIndex].equals("black_plate")) {
+                        } else if (PrePostProcessor.mClasses[plate_result.classIndex].equals("Black_PLATE")) {
                             black_plate_include = PrePostProcessor.mClasses[result.classIndex];
-                        } else if (PrePostProcessor.mClasses[plate_result.classIndex].equals("red_plate")) {
+                        } else if (PrePostProcessor.mClasses[plate_result.classIndex].equals("Red_PLATE")) {
                             red_plate_include = PrePostProcessor.mClasses[result.classIndex];
-                        } else if (PrePostProcessor.mClasses[plate_result.classIndex].equals("blue_plate")) {
+                        } else if (PrePostProcessor.mClasses[plate_result.classIndex].equals("Blue_PLATE")) {
                             blue_plate_include = PrePostProcessor.mClasses[plate_result.classIndex];
                         }
                     }
